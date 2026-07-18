@@ -46,6 +46,9 @@ export default function SectionNav() {
           <Link to="/workspaces" className="text-sm font-medium text-white/70 hover:text-accent transition-colors">
             Workspaces
           </Link>
+          <Link to="/billing" className="text-sm font-medium text-white/70 hover:text-accent transition-colors">
+            Billing
+          </Link>
           <Link to="/blueprint" className="text-sm font-medium text-accent hover:opacity-80 transition-opacity">
             Blueprint
           </Link>
