@@ -43,6 +43,9 @@ export default function SectionNav() {
         </a>
 
         <nav className="hidden md:flex items-center gap-7">
+          <Link to="/workspaces" className="text-sm font-medium text-white/70 hover:text-accent transition-colors">
+            Workspaces
+          </Link>
           <Link to="/blueprint" className="text-sm font-medium text-accent hover:opacity-80 transition-opacity">
             Blueprint
           </Link>
@@ -57,12 +60,12 @@ export default function SectionNav() {
           ))}
         </nav>
 
-        <a
-          href="#top"
+        <Link
+          to="/workspaces"
           className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
         >
           Get Started
-        </a>
+        </Link>
       </div>
     </header>
   );

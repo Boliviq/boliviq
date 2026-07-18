@@ -8,6 +8,8 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import Home from '@/pages/Home';
 import Blueprint from '@/pages/Blueprint';
+import Workspaces from '@/pages/Workspaces';
+import { WorkspaceProvider } from '@/lib/workspaceContext';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -37,6 +39,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/blueprint" element={<Blueprint />} />
+      <Route path="/workspaces" element={<WorkspaceProvider><Workspaces /></WorkspaceProvider>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
