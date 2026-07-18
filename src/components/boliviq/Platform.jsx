@@ -43,7 +43,7 @@ export default function Platform() {
               key={i}
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3.5 py-1.5 text-sm text-white/70"
             >
-              <Plug className="h-3 w-3 text-amber-300/60" /> {i}
+              <Plug className="h-3 w-3 text-accent/70" /> {i}
             </span>
           ))}
         </div>
@@ -61,7 +61,7 @@ export default function Platform() {
               key={v}
               className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3.5"
             >
-              <Compass className="h-4 w-4 text-amber-300/60" />
+              <Compass className="h-4 w-4 text-accent/70" />
               <span className="text-sm text-white/75">{v}</span>
             </div>
           ))}
@@ -78,10 +78,10 @@ export default function Platform() {
           {principles.map((p) => (
             <div key={p.title} className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
               <div className="flex items-center gap-2 mb-2">
-                <ShieldCheck className="h-4 w-4 text-amber-300/70" />
-                <h3 className="font-display text-base text-foreground">{p.title}</h3>
+                <ShieldCheck className="h-4 w-4 text-accent" />
+                <h3 className="font-display text-base font-semibold text-foreground">{p.title}</h3>
               </div>
-              <p className="text-sm text-white/50 leading-relaxed">{p.desc}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
             </div>
           ))}
         </div>
@@ -90,8 +90,8 @@ export default function Platform() {
       <footer className="px-6 md:px-10 py-16 border-t border-white/[0.06]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <p className="font-display text-lg text-foreground">Boliviq</p>
-            <p className="text-sm text-white/40">
+            <p className="font-display text-lg font-semibold text-foreground">Boliviq</p>
+            <p className="text-sm text-muted-foreground">
               The operating system for real estate &amp; construction.
             </p>
           </div>

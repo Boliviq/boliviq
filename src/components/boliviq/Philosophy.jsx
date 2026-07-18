@@ -64,18 +64,18 @@ export default function Philosophy() {
         {pillars.map((p, i) => (
           <div
             key={p.title}
-            className="group rounded-2xl border border-white/10 bg-white/[0.02] p-7 transition-colors hover:border-amber-300/20 hover:bg-amber-300/[0.02]"
+            className="group rounded-2xl border border-white/10 bg-white/[0.02] p-7 transition-colors hover:border-accent/25 hover:bg-accent/[0.02]"
           >
             <div className="flex items-center gap-4 mb-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-amber-300/20 bg-amber-300/[0.05]">
-                <p.icon className="h-5 w-5 text-amber-300" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-accent/20 bg-accent/10">
+                <p.icon className="h-5 w-5 text-accent" />
               </div>
               <div>
                 <span className="font-mono text-xs text-white/30">0{i + 1}</span>
-                <h3 className="font-display text-xl text-foreground leading-tight">{p.title}</h3>
+                <h3 className="font-display text-xl font-semibold text-foreground leading-tight">{p.title}</h3>
               </div>
             </div>
-            <p className="text-sm text-white/50 mb-5">{p.desc}</p>
+            <p className="text-sm text-muted-foreground mb-5">{p.desc}</p>
             <div className="flex flex-wrap gap-2">
               {p.items.map((it) => (
                 <span

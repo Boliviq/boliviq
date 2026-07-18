@@ -102,12 +102,12 @@ export default function Ecosystem() {
         {roles.map((r) => (
           <div key={r.role} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display text-lg text-foreground">{r.role}</h3>
+              <h3 className="font-display text-lg font-semibold text-foreground">{r.role}</h3>
               <span
                 className={`rounded-full px-3 py-1 text-[10px] tracking-[0.15em] uppercase ${
                   r.tier === "Free"
                     ? "border border-emerald-300/20 bg-emerald-300/[0.05] text-emerald-200/80"
-                    : "border border-amber-300/20 bg-amber-300/[0.05] text-amber-200/80"
+                    : "border border-accent/20 bg-accent/[0.05] text-accent"
                 }`}
               >
                 {r.tier}

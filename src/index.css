@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 240 16% 4.5%;
-    --foreground: 40 34% 93%;
-    --card: 240 13% 7%;
-    --card-foreground: 40 34% 93%;
-    --popover: 240 13% 7%;
-    --popover-foreground: 40 34% 93%;
-    --primary: 40 34% 93%;
-    --primary-foreground: 240 16% 4.5%;
-    --secondary: 240 10% 12%;
-    --secondary-foreground: 40 34% 93%;
-    --muted: 240 10% 14%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 38 74% 61%;
-    --accent-foreground: 240 16% 6%;
+    --background: 210 50% 8%;
+    --foreground: 0 0% 100%;
+    --card: 210 45% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 210 45% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 73 100% 47%;
+    --primary-foreground: 210 50% 8%;
+    --secondary: 210 40% 16%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 16%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 73 100% 47%;
+    --accent-foreground: 210 50% 8%;
     --destructive: 0 62.8% 40%;
-    --destructive-foreground: 40 34% 93%;
-    --border: 240 10% 16%;
-    --input: 240 10% 16%;
-    --ring: 38 74% 61%;
-    --chart-1: 38 74% 61%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 35% 18%;
+    --input: 210 35% 18%;
+    --ring: 73 100% 47%;
+    --chart-1: 73 100% 47%;
     --chart-2: 173 45% 45%;
     --chart-3: 197 40% 50%;
     --chart-4: 43 74% 66%;
@@ -31,16 +31,16 @@
     --radius: 0.75rem;
     --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --sidebar-background: 240 16% 4.5%;
-    --sidebar-foreground: 40 34% 93%;
-    --sidebar-primary: 38 74% 61%;
-    --sidebar-primary-foreground: 240 16% 6%;
-    --sidebar-accent: 240 10% 12%;
-    --sidebar-accent-foreground: 40 34% 93%;
-    --sidebar-border: 240 10% 16%;
-    --sidebar-ring: 38 74% 61%;
+    --sidebar-background: 210 50% 8%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 73 100% 47%;
+    --sidebar-primary-foreground: 210 50% 8%;
+    --sidebar-accent: 210 40% 16%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 35% 18%;
+    --sidebar-ring: 73 100% 47%;
   }
 }
 

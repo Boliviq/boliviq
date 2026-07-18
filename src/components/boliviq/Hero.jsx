@@ -1,64 +1,75 @@
 import React from "react";
-import { Sparkles, ArrowDown } from "lucide-react";
-
-const pillars = ["Find", "Analyze", "Connect", "Automate"];
+import { Sparkles, ArrowRight, Play } from "lucide-react";
+import FeatureBadges from "./FeatureBadges";
+import DealAnalyzer from "./DealAnalyzer";
+import StatsBar from "./StatsBar";
 
 export default function Hero() {
   return (
-    <section
-      id="top"
-      className="relative min-h-screen flex flex-col justify-center px-6 md:px-10 overflow-hidden"
-    >
+    <section id="top" className="relative px-6 md:px-10 pt-28 pb-16 overflow-hidden">
+      {/* grid + glows */}
+      <div
+        className="absolute inset-0 -z-10 opacity-[0.035]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
       <div
         className="absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 15% 0%, rgba(212,165,87,0.14), transparent 60%), radial-gradient(ellipse 70% 50% at 90% 95%, rgba(64,96,140,0.18), transparent 60%), radial-gradient(circle at 50% 45%, rgba(212,165,87,0.04), transparent 70%)",
+            "radial-gradient(ellipse 70% 55% at 20% 0%, rgba(184,242,0,0.10), transparent 60%), radial-gradient(ellipse 60% 50% at 90% 90%, rgba(56,96,140,0.18), transparent 60%)",
         }}
       />
-      <div className="absolute right-[10%] top-[20%] -z-10 hidden md:block">
-        <div className="relative h-2.5 w-2.5">
-          <div className="absolute inset-0 rounded-full bg-amber-200 blur-md animate-pulse" />
-          <div className="absolute inset-0 rounded-full bg-amber-100" />
+
+      <div className="max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-14 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 mb-6">
+              <Sparkles className="h-3.5 w-3.5 text-accent" />
+              <span className="text-xs font-semibold tracking-[0.2em] uppercase text-accent">
+                North Star Vision Document
+              </span>
+            </div>
+
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.02] tracking-tight text-foreground">
+              Find Better Deals.
+              <br />
+              Build Bigger Profits.
+            </h1>
+
+            <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed">
+              Boliviq brings property acquisition, deal analysis, construction planning, and
+              project management into one professional AI-powered platform — the master
+              specification from which every feature, screen, agent, and decision is derived.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="#overview"
+                className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
+              >
+                Start Your Free Plan <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href="#intelligence"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 hover:border-accent/40 hover:text-accent transition-colors"
+              >
+                <Play className="h-4 w-4" /> See How It Works
+              </a>
+            </div>
+
+            <FeatureBadges />
+          </div>
+
+          <div className="lg:mt-0">
+            <DealAnalyzer />
+          </div>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto w-full pt-16">
-        <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/[0.04] px-4 py-1.5 mb-8">
-          <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-          <span className="text-xs tracking-[0.25em] uppercase text-amber-100/80">
-            North Star Vision Document
-          </span>
-        </div>
-
-        <h1 className="font-display text-5xl sm:text-6xl md:text-8xl leading-[0.98] tracking-tight text-foreground">
-          The operating system
-          <br />
-          for <span className="italic text-amber-200/90">real estate</span>.
-        </h1>
-
-        <p className="mt-8 max-w-2xl text-lg md:text-xl text-white/55 leading-relaxed">
-          Boliviq is an AI-powered real estate and construction platform that connects every
-          participant — buyers, sellers, builders, investors, lenders, and professionals — into one
-          intelligent ecosystem. This document is the master specification from which every feature,
-          screen, agent, and decision is derived.
-        </p>
-
-        <div className="mt-10 flex flex-wrap gap-3">
-          {pillars.map((p) => (
-            <span
-              key={p}
-              className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-sm text-white/70"
-            >
-              {p}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30">
-        <span className="text-[10px] tracking-[0.3em] uppercase">Read on</span>
-        <ArrowDown className="h-4 w-4 animate-bounce" />
+        <StatsBar />
       </div>
     </section>
   );

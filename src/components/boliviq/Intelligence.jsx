@@ -35,7 +35,7 @@ export default function Intelligence() {
               key={a}
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3.5 py-1.5 text-sm text-white/70"
             >
-              <Cpu className="h-3 w-3 text-amber-300/60" /> {a}
+              <Cpu className="h-3 w-3 text-accent/70" /> {a}
             </span>
           ))}
         </div>
@@ -51,10 +51,10 @@ export default function Intelligence() {
           {agents.map((a) => (
             <div
               key={a}
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 transition-colors hover:border-amber-300/20"
+              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 transition-colors hover:border-accent/25"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-300/15 bg-amber-300/[0.04]">
-                <Bot className="h-4 w-4 text-amber-300/70" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-accent/15 bg-accent/[0.04]">
+                <Bot className="h-4 w-4 text-accent/80" />
               </div>
               <span className="text-sm text-white/75">{a}</span>
             </div>

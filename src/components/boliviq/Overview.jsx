@@ -24,7 +24,7 @@ export default function Overview() {
       >
         <div className="grid md:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
-            <h3 className="font-display text-xl text-white/80 mb-5">The problem today</h3>
+            <h3 className="font-display text-xl font-semibold text-white/80 mb-5">The problem today</h3>
             <ul className="space-y-3">
               {disconnected.map((d) => (
                 <li key={d} className="flex gap-3 text-white/50 text-sm">
@@ -34,13 +34,13 @@ export default function Overview() {
               ))}
             </ul>
           </div>
-          <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[0.03] p-7">
-            <h3 className="font-display text-xl text-amber-100/90 mb-5">The Boliviq way</h3>
-            <p className="text-white/60 text-sm leading-relaxed mb-5">
+          <div className="rounded-2xl border border-accent/15 bg-accent/[0.03] p-7">
+            <h3 className="font-display text-xl font-semibold text-accent mb-5">The Boliviq way</h3>
+            <p className="text-white/70 text-sm leading-relaxed mb-5">
               Instead of separate software, Boliviq becomes the central operating platform where AI
               assists every participant while intelligently connecting them together.
             </p>
-            <p className="text-white/45 text-xs leading-relaxed">
+            <p className="text-white/50 text-xs leading-relaxed">
               The goal is to become the Salesforce + Zillow + DealMachine + Buildertrend +
               Monday.com + ChatGPT + LinkedIn for the real estate industry.
             </p>
@@ -55,7 +55,7 @@ export default function Overview() {
         title="Make buying, selling, building, investing, and managing real estate dramatically easier."
         intro="Boliviq's AI reduces paperwork, eliminates repetitive tasks, automates communication, uncovers opportunities before competitors, and helps users make smarter decisions."
       >
-        <blockquote className="rounded-2xl border-l-2 border-amber-300/50 bg-white/[0.02] px-7 py-6 font-display text-2xl md:text-3xl text-white/85 leading-snug">
+        <blockquote className="rounded-2xl border-l-2 border-accent/50 bg-white/[0.02] px-7 py-6 font-display text-2xl md:text-3xl font-semibold text-white/90 leading-snug">
           “Rather than replacing professionals, Boliviq amplifies them.”
         </blockquote>
       </Section>

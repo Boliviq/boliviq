@@ -29,8 +29,8 @@ export default function Economy() {
       >
         <div className="grid gap-5 md:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
-            <Coins className="h-5 w-5 text-amber-300/70 mb-4" />
-            <h3 className="font-display text-lg mb-4 text-foreground">Credits power</h3>
+            <Coins className="h-5 w-5 text-accent mb-4" />
+            <h3 className="font-display text-lg font-semibold mb-4 text-foreground">Credits power</h3>
             <div className="flex flex-wrap gap-2">
               {creditTasks.map((t) => (
                 <span
@@ -43,13 +43,13 @@ export default function Economy() {
             </div>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
-            <Users className="h-5 w-5 text-amber-300/70 mb-4" />
-            <h3 className="font-display text-lg mb-4 text-foreground">Credits can be</h3>
+            <Users className="h-5 w-5 text-accent mb-4" />
+            <h3 className="font-display text-lg font-semibold mb-4 text-foreground">Credits can be</h3>
             <div className="flex flex-wrap gap-2">
               {creditSources.map((s) => (
                 <span
                   key={s}
-                  className="rounded-full border border-amber-300/15 bg-amber-300/[0.04] px-3 py-1 text-xs text-amber-100/75"
+                  className="rounded-full border border-accent/15 bg-accent/[0.04] px-3 py-1 text-xs text-accent"
                 >
                   {s}
                 </span>

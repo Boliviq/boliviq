@@ -24,9 +24,9 @@ export default function Marketplace() {
         {categories.map((c) => (
           <div
             key={c}
-            className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3.5 transition-colors hover:border-amber-300/20 hover:bg-amber-300/[0.02]"
+            className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3.5 transition-colors hover:border-accent/25 hover:bg-accent/[0.02]"
           >
-            <Store className="h-4 w-4 text-amber-300/60" />
+            <Store className="h-4 w-4 text-accent/70" />
             <span className="text-sm text-white/70">{c}</span>
           </div>
         ))}
