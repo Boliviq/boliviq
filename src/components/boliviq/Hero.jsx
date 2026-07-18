@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Sparkles, ArrowRight, Play } from "lucide-react";
 import FeatureBadges from "./FeatureBadges";
 import DealAnalyzer from "./DealAnalyzer";
@@ -53,12 +54,12 @@ export default function Hero() {
               >
                 Start Your Free Plan <ArrowRight className="h-4 w-4" />
               </a>
-              <a
-                href="#intelligence"
+              <Link
+                to="/blueprint"
                 className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 hover:border-accent/40 hover:text-accent transition-colors"
               >
-                <Play className="h-4 w-4" /> See How It Works
-              </a>
+                <Play className="h-4 w-4" /> View the Blueprint
+              </Link>
             </div>
 
             <FeatureBadges />

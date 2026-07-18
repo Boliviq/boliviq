@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Building2 } from "lucide-react";
 
 const items = [
@@ -42,6 +43,9 @@ export default function SectionNav() {
         </a>
 
         <nav className="hidden md:flex items-center gap-7">
+          <Link to="/blueprint" className="text-sm font-medium text-accent hover:opacity-80 transition-opacity">
+            Blueprint
+          </Link>
           {items.map((i) => (
             <a
               key={i.id}
