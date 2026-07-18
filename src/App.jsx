@@ -13,6 +13,13 @@ import Billing from '@/pages/Billing';
 import Properties from '@/pages/Properties';
 import Contacts from '@/pages/Contacts';
 import Dashboard from '@/pages/Dashboard';
+import Marketplace from '@/pages/Marketplace';
+import Construction from '@/pages/Construction';
+import ProjectDetail from '@/pages/ProjectDetail';
+import Assistant from '@/pages/Assistant';
+import Rewards from '@/pages/Rewards';
+import Analytics from '@/pages/Analytics';
+import Admin from '@/pages/Admin';
 import { WorkspaceProvider } from '@/lib/workspaceContext';
 
 const AuthenticatedApp = () => {
@@ -48,6 +55,13 @@ const AuthenticatedApp = () => {
       <Route path="/properties" element={<WorkspaceProvider><Properties /></WorkspaceProvider>} />
       <Route path="/contacts" element={<WorkspaceProvider><Contacts /></WorkspaceProvider>} />
       <Route path="/dashboard" element={<WorkspaceProvider><Dashboard /></WorkspaceProvider>} />
+      <Route path="/marketplace" element={<WorkspaceProvider><Marketplace /></WorkspaceProvider>} />
+      <Route path="/construction" element={<WorkspaceProvider><Construction /></WorkspaceProvider>} />
+      <Route path="/construction/:id" element={<WorkspaceProvider><ProjectDetail /></WorkspaceProvider>} />
+      <Route path="/assistant" element={<WorkspaceProvider><Assistant /></WorkspaceProvider>} />
+      <Route path="/rewards" element={<WorkspaceProvider><Rewards /></WorkspaceProvider>} />
+      <Route path="/analytics" element={<WorkspaceProvider><Analytics /></WorkspaceProvider>} />
+      <Route path="/admin" element={<WorkspaceProvider><Admin /></WorkspaceProvider>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

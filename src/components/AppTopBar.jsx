@@ -2,13 +2,20 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useWorkspace } from "@/lib/workspaceContext";
 import { Building2 } from "lucide-react";
+import MobileNav from "@/components/MobileNav";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/analytics", label: "Analytics" },
   { to: "/properties", label: "CRM" },
+  { to: "/marketplace", label: "Marketplace" },
+  { to: "/construction", label: "Construction" },
+  { to: "/assistant", label: "AI Assistant" },
+  { to: "/rewards", label: "Rewards" },
   { to: "/contacts", label: "Contacts" },
   { to: "/workspaces", label: "Workspaces" },
   { to: "/billing", label: "Billing" },
+  { to: "/admin", label: "Admin" },
 ];
 
 export default function AppTopBar() {
@@ -33,6 +40,7 @@ export default function AppTopBar() {
           <div className="text-xs text-muted-foreground truncate max-w-[40vw]">{activeWorkspace.name}</div>
         )}
       </div>
+      <MobileNav />
     </header>
   );
 }

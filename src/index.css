@@ -67,3 +67,9 @@
     scrollbar-width: none;
   }
 }
+
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 3.5rem;
+  }
+}

@@ -67,4 +67,12 @@ Secrets (Stripe keys, webhook secret) are stored as Base44 platform environment 
 - Department 01 (Core Infrastructure): **PASS — v1.0.0**.
 - Department 02 (Billing & Subscriptions): **PASS — v1.0.0** (Stripe test mode; checkout, portal, webhook lifecycle, credit charging, entitlement enforcement). Coupons/referrals deferred to Phase 7.
 - Department 03 (CRM, Pipeline & Contacts): **PASS — v1.0.0** (properties, drag-and-drop pipeline, contacts, investor dashboard).
-- Department 04 (Marketplace): **AUTHORIZED — next**.
+- Department 04 (Marketplace): **PASS — v1.0.0** (service/material/equipment listings, search, category filters, CRUD).
+- Department 05 (Construction Intelligence): **PASS — v1.0.0** (projects, budget tracking, task board).
+- Department 06 (AI Assistant): **PASS — v1.0.0** (conversational AI over live workspace data, persistent history).
+- Department 07 (Credit Economy & Rewards): **PASS — v1.0.0** (coupons, referral codes, redeemCoupon function, rewards hub).
+- Department 08 (Analytics & BI): **PASS — v1.0.0** (KPIs + 5 charts across portfolio/construction/contacts/marketplace).
+- Department 09 (Admin Console): **PASS — v1.0.0** (members, audit log, workspace overview; owner/admin guarded).
+- Department 10 (Public Site & PWA): **PASS — v1.0.0** (installable manifest, PWA meta, mobile bottom nav, responsive).
+- Department 11 (Launch Readiness): **PASS — v1.0.0** (consolidation, QA handoff, master launch report).
+- **PLATFORM STATUS: ALL DEPARTMENTS PASS — code-complete; live QA gate pending publish.** (See docs/LAUNCH-REPORT.md)
