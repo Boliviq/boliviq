@@ -15,11 +15,12 @@
       "type": "string",
       "enum": [
         "free",
-        "beginner",
         "professional",
-        "team",
-        "professional_ai_max",
-        "team_ai_max"
+        "team_professional",
+        "professional_ai",
+        "team_professional_ai",
+        "professional_ai_unlimited",
+        "team_ai_unlimited"
       ],
       "default": "free"
     },

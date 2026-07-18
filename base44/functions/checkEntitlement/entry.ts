@@ -1,13 +1,50 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 
-// Plan -> default entitlements. null = unlimited. false = disabled.
+// 2026 pricing migration — 7 tiers.
+// null = unlimited. false = disabled. true = enabled (no numeric limit).
 const PLAN_ENTITLEMENTS = {
-  free: { ai_credits_monthly: 25, max_properties: 5, construction_intelligence: false, ai_agents_unlimited: false, seats: 1 },
-  beginner: { ai_credits_monthly: 1000, max_properties: 100, construction_intelligence: false, ai_agents_unlimited: false, seats: 1 },
-  professional: { ai_credits_monthly: 5000, max_properties: null, construction_intelligence: true, ai_agents_unlimited: false, seats: 1 },
-  team: { ai_credits_monthly: 5000, max_properties: null, construction_intelligence: true, ai_agents_unlimited: false, seats: 5 },
-  professional_ai_max: { ai_credits_monthly: null, max_properties: null, construction_intelligence: true, ai_agents_unlimited: true, seats: 1 },
-  team_ai_max: { ai_credits_monthly: null, max_properties: null, construction_intelligence: true, ai_agents_unlimited: true, seats: 10 },
+  // Homeowner (FREE) — no AI, marketplace + basic tools only.
+  free: {
+    marketplace: true, crm: false, construction_intelligence: false,
+    deal_calculator: true, ai_access: false, ai_unlimited: false,
+    ai_credits_monthly: 0, seats: 1,
+  },
+  // Professional — $49.99, no AI.
+  professional: {
+    marketplace: true, crm: true, construction_intelligence: true,
+    deal_calculator: true, ai_access: false, ai_unlimited: false,
+    ai_credits_monthly: 0, seats: 1,
+  },
+  // Team Professional — $199, up to 5 members, no AI.
+  team_professional: {
+    marketplace: true, crm: true, construction_intelligence: true,
+    deal_calculator: true, ai_access: false, ai_unlimited: false,
+    ai_credits_monthly: 0, seats: 5,
+  },
+  // Professional + AI — $149.99, token-metered AI.
+  professional_ai: {
+    marketplace: true, crm: true, construction_intelligence: true,
+    deal_calculator: true, ai_access: true, ai_unlimited: false,
+    ai_credits_monthly: 10000, seats: 1,
+  },
+  // Team Professional + AI — $699, shared token wallet, up to 5 members.
+  team_professional_ai: {
+    marketplace: true, crm: true, construction_intelligence: true,
+    deal_calculator: true, ai_access: true, ai_unlimited: false,
+    ai_credits_monthly: 50000, seats: 5,
+  },
+  // Professional AI Unlimited — $499, unlimited AI (no tokens).
+  professional_ai_unlimited: {
+    marketplace: true, crm: true, construction_intelligence: true,
+    deal_calculator: true, ai_access: true, ai_unlimited: true,
+    ai_credits_monthly: null, seats: 1,
+  },
+  // Team AI Unlimited — $1,299, unlimited shared AI, up to 5 members.
+  team_ai_unlimited: {
+    marketplace: true, crm: true, construction_intelligence: true,
+    deal_calculator: true, ai_access: true, ai_unlimited: true,
+    ai_credits_monthly: null, seats: 5,
+  },
 };
 
 Deno.serve(async (req) => {
