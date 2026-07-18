@@ -10,6 +10,9 @@ import Home from '@/pages/Home';
 import Blueprint from '@/pages/Blueprint';
 import Workspaces from '@/pages/Workspaces';
 import Billing from '@/pages/Billing';
+import Properties from '@/pages/Properties';
+import Contacts from '@/pages/Contacts';
+import Dashboard from '@/pages/Dashboard';
 import { WorkspaceProvider } from '@/lib/workspaceContext';
 
 const AuthenticatedApp = () => {
@@ -42,6 +45,9 @@ const AuthenticatedApp = () => {
       <Route path="/blueprint" element={<Blueprint />} />
       <Route path="/workspaces" element={<WorkspaceProvider><Workspaces /></WorkspaceProvider>} />
       <Route path="/billing" element={<WorkspaceProvider><Billing /></WorkspaceProvider>} />
+      <Route path="/properties" element={<WorkspaceProvider><Properties /></WorkspaceProvider>} />
+      <Route path="/contacts" element={<WorkspaceProvider><Contacts /></WorkspaceProvider>} />
+      <Route path="/dashboard" element={<WorkspaceProvider><Dashboard /></WorkspaceProvider>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

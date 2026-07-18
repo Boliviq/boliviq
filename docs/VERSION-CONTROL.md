@@ -65,4 +65,6 @@ Secrets (Stripe keys, webhook secret) are stored as Base44 platform environment 
 
 - GitHub 2-way sync: **pending owner connection** (Dashboard → GitHub → Connect; requires Builder plan+).
 - Department 01 (Core Infrastructure): **PASS — v1.0.0**.
-- Department 02 (Billing & Subscriptions): **IN-PROGRESS** (core complete; usage/entitlement enforcement, coupons, referrals, AI Max lifecycle outstanding). Department 03 LOCKED.
+- Department 02 (Billing & Subscriptions): **PASS — v1.0.0** (Stripe test mode; checkout, portal, webhook lifecycle, credit charging, entitlement enforcement). Coupons/referrals deferred to Phase 7.
+- Department 03 (CRM, Pipeline & Contacts): **PASS — v1.0.0** (properties, drag-and-drop pipeline, contacts, investor dashboard).
+- Department 04 (Marketplace): **AUTHORIZED — next**.
