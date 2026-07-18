@@ -1,0 +1,61 @@
+{
+  "name": "Workspace",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "free",
+        "beginner",
+        "professional",
+        "team",
+        "professional_ai_max",
+        "team_ai_max"
+      ],
+      "default": "free"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "deleted"
+      ],
+      "default": "active"
+    },
+    "billing_source": {
+      "type": "string",
+      "enum": [
+        "stripe",
+        "apple",
+        "google_play",
+        "owner_grant",
+        "promotion",
+        "manual",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "stripe_customer_id": {
+      "type": "string"
+    },
+    "subscription_id": {
+      "type": "string"
+    },
+    "settings": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

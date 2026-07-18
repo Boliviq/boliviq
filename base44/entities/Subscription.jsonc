@@ -1,0 +1,67 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "free",
+        "beginner",
+        "professional",
+        "team",
+        "professional_ai_max",
+        "team_ai_max"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "trialing",
+        "past_due",
+        "canceled",
+        "expired",
+        "suspended"
+      ],
+      "default": "active"
+    },
+    "billing_source": {
+      "type": "string",
+      "enum": [
+        "stripe",
+        "apple",
+        "google_play",
+        "owner_grant",
+        "promotion",
+        "manual",
+        "unknown"
+      ],
+      "default": "stripe"
+    },
+    "stripe_subscription_id": {
+      "type": "string"
+    },
+    "stripe_price_lookup_key": {
+      "type": "string"
+    },
+    "current_period_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "cancel_at_period_end": {
+      "type": "boolean",
+      "default": false
+    },
+    "seats": {
+      "type": "number",
+      "default": 1
+    }
+  },
+  "required": [
+    "workspace_id",
+    "plan"
+  ]
+}

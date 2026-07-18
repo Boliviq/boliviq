@@ -1,0 +1,20 @@
+{
+  "name": "CreditWallet",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "balance": {
+      "type": "number",
+      "default": 0
+    },
+    "reserved": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "workspace_id"
+  ]
+}

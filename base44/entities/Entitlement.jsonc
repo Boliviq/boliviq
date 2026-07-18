@@ -1,0 +1,33 @@
+{
+  "name": "Entitlement",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "feature": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "limit_value": {
+      "type": "number"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "plan",
+        "owner_grant",
+        "promotion",
+        "manual"
+      ],
+      "default": "plan"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "feature"
+  ]
+}

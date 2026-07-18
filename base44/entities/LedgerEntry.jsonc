@@ -1,0 +1,43 @@
+{
+  "name": "LedgerEntry",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "wallet_id": {
+      "type": "string"
+    },
+    "delta": {
+      "type": "number"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "grant",
+        "reservation",
+        "charge",
+        "release",
+        "refund",
+        "adjustment",
+        "pack_purchase",
+        "referral"
+      ]
+    },
+    "reference": {
+      "type": "string"
+    },
+    "idempotency_key": {
+      "type": "string"
+    },
+    "balance_after": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "wallet_id",
+    "delta",
+    "type"
+  ]
+}

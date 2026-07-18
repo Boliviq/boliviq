@@ -1,0 +1,38 @@
+{
+  "name": "AgentDefinition",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "mission": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "model": {
+      "type": "string"
+    },
+    "prompt_version": {
+      "type": "string"
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "default_credit_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "escalation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "AgentRun",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string"
+    },
+    "workspace_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "succeeded",
+        "failed",
+        "canceled",
+        "awaiting_approval"
+      ],
+      "default": "pending"
+    },
+    "cost_credits": {
+      "type": "number",
+      "default": 0
+    },
+    "result_summary": {
+      "type": "string"
+    },
+    "logs_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "agent_id",
+    "workspace_id"
+  ]
+}

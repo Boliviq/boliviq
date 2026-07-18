@@ -1,0 +1,105 @@
+{
+  "name": "Property",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "parcel_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "lead",
+        "prospect",
+        "under_contract",
+        "owned",
+        "listed",
+        "sold",
+        "archived"
+      ],
+      "default": "lead"
+    },
+    "pipeline_stage": {
+      "type": "string"
+    },
+    "project_status": {
+      "type": "string"
+    },
+    "ownership": {
+      "type": "string"
+    },
+    "occupancy": {
+      "type": "string",
+      "enum": [
+        "vacant",
+        "owner_occupied",
+        "tenant_occupied",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "property_type": {
+      "type": "string"
+    },
+    "deal_strategy": {
+      "type": "string",
+      "enum": [
+        "buy_hold",
+        "fix_flip",
+        "wholesale",
+        "wholetail",
+        "brrrr",
+        "new_construction",
+        "land",
+        "multifamily",
+        "creative"
+      ]
+    },
+    "characteristics": {
+      "type": "object"
+    },
+    "valuation": {
+      "type": "number"
+    },
+    "arv": {
+      "type": "number"
+    },
+    "lien_encumbrance": {
+      "type": "boolean",
+      "default": false
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "provenance": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "address"
+  ]
+}

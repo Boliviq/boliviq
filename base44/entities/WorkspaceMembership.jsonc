@@ -1,0 +1,42 @@
+{
+  "name": "WorkspaceMembership",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "admin",
+        "manager",
+        "member",
+        "finance",
+        "contractor",
+        "agent",
+        "viewer",
+        "support",
+        "platform_admin"
+      ],
+      "default": "member"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "invited",
+        "revoked"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "user_id",
+    "role"
+  ]
+}
