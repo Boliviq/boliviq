@@ -23,6 +23,7 @@ import Admin from '@/pages/Admin';
 import DealAlerts from '@/pages/DealAlerts';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import ContractorTools from '@/pages/ContractorTools';
+import ConstructionEstimator from '@/pages/ConstructionEstimator';
 import HomeownerHome from '@/pages/HomeownerHome';
 import ContractorHome from '@/pages/ContractorHome';
 import AgentHome from '@/pages/AgentHome';
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
       <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
       <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
       <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
+      <Route path="/construction-estimator" element={<WorkspaceProvider><ConstructionEstimator /></WorkspaceProvider>} />
       <Route path="/homeowner" element={<HomeownerHome />} />
       <Route path="/contractor" element={<ContractorHome />} />
       <Route path="/agent" element={<AgentHome />} />
