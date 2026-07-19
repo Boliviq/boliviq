@@ -331,19 +331,21 @@ export const companies = [
 ];
 
 export const plans = [
-  { name: "Free", price: "$0", period: "/mo", highlights: ["10 active properties", "Basic CRM & pipeline", "Deal calculator", "100 monthly credits", "Limited reports", "Community support", "Homeowner marketplace posting (safety-limited)"] },
-  { name: "Beginner", price: "$49", period: "/mo · $470/yr", highlights: ["Up to 500 active properties", "Basic major modules", "Basic deal & construction tools", "CRM, pipeline, reports, basic automations", "500 monthly credits", "Email support"] },
-  { name: "Professional", price: "$149", period: "/mo · $1,430/yr", featured: true, highlights: ["Up to 5,000 active properties", "Advanced CRM & pipeline", "Construction planner, takeoffs, labor estimates, scopes", "AI reports; call scripts/summaries", "Integrations & automations", "2,500 monthly credits", "Priority support"] },
-  { name: "Team", price: "$399", period: "/mo · $3,830/yr", highlights: ["5 included users", "Shared CRM, pipeline, properties, wallet", "Team permissions, analytics, dashboards", "7,500 monthly credits", "Priority support", "Extra seats $99/mo"] },
-  { name: "AI Max", price: "+$499 / +$1,299", period: "Pro / Team per mo", badge: "AI Max", highlights: ["Expanded AI access", "Advanced construction/photo/reporting tools", "Agent workflows", "Priority processing", "Owner-configurable credits (reasonable-use)"] },
+  { name: "Homeowner", price: "$0", period: "/forever", highlights: ["Post homes for sale & projects", "Browse marketplace & search pros", "Message professionals & get estimates", "Favorites, photos & reviews", "No AI", "Free forever"] },
+  { name: "Professional", price: "$49.99", period: "/mo · $479.90/yr", highlights: ["Pro profile, verification & leads", "CRM, pipeline & marketplace", "Scheduling, estimates & invoices", "Construction tools & deal calculator", "Marketing, docs & analytics", "No AI"] },
+  { name: "Team Professional", price: "$199", period: "/mo · $1,910.40/yr", highlights: ["Everything in Professional", "Up to 5 members", "Shared CRM, projects, files & clients", "Roles, permissions & task assignments", "Shared dashboards & calendars", "No AI"] },
+  { name: "Professional + AI", price: "$149.99", period: "/mo · $1,439.90/yr", featured: true, badge: "AI · Tokens", highlights: ["Everything in Professional", "Construction, deal & property AI", "Takeoffs, labor, proposals & marketing AI", "Image, document, chat, voice & workflow AI", "10,000 tokens included monthly", "Buy more tokens anytime"] },
+  { name: "Team Professional + AI", price: "$699", period: "/mo · $6,710.40/yr", badge: "AI · Tokens", highlights: ["Everything in Team Professional", "Up to 5 members", "Shared AI token wallet", "Shared assistants, reports & automations", "50,000 tokens included monthly", "Buy more tokens anytime"] },
+  { name: "Professional AI Unlimited", price: "$499", period: "/mo · $4,790.40/yr", badge: "AI · Unlimited", highlights: ["Everything in Professional + AI", "Unlimited AI — no tokens", "Unlimited reports, analysis & automation", "Unlimited assistants, voice & document AI", "No token deductions ever", "Everything unlimited"] },
+  { name: "Team AI Unlimited", price: "$1,299", period: "/mo · $12,470.40/yr", badge: "AI · Unlimited", highlights: ["Everything in Team Professional + AI", "Up to 5 members", "Unlimited shared AI — no tokens", "Unlimited automation, assistants & reports", "No token required", "Everything unlimited"] },
 ];
 
-export const creditPacks = ["500 credits — $29", "2,000 credits — $99", "5,000 credits — $199", "15,000 credits — $499"];
+export const creditPacks = ["5,000 AI tokens — $49", "15,000 AI tokens — $129", "50,000 AI tokens — $399"];
 
 export const coupons = [
   "NateB — 25% discount, one redemption, no stacking, restricted eligible plans",
   "OWNER100 — owner-only grant, implemented outside synthetic paid subscriptions, idempotent and revocable",
-  "Referral — referrer 2,500 credits and new customer 500 credits after verification, with anti-fraud controls",
+  "Referral — referrer 2,500 AI tokens and new customer 500 AI tokens after verification, with anti-fraud controls",
 ];
 
 export const roadmap = [

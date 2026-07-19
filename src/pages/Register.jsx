@@ -8,6 +8,7 @@ import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
+import PlanPicker from "@/components/onboarding/PlanPicker";
 import { toast } from "@/components/ui/use-toast";
 
 export default function Register() {
@@ -17,6 +18,7 @@ export default function Register() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
+  const [showPlanPicker, setShowPlanPicker] = useState(false);
   const [otpCode, setOtpCode] = useState("");
 
   const handleSubmit = async (e) => {
@@ -45,7 +47,7 @@ export default function Register() {
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
       }
-      window.location.href = "/";
+      setShowPlanPicker(true);
     } catch (err) {
       setError(err.message || "Invalid verification code");
     } finally {
@@ -69,6 +71,17 @@ export default function Register() {
   const handleGoogle = () => {
     base44.auth.loginWithProvider("google", "/");
   };
+
+  if (showPlanPicker) {
+    return (
+      <PlanPicker
+        onChoose={(id) => {
+          sessionStorage.setItem("boliviq_onboarding_plan", id);
+          window.location.href = id === "free" ? "/" : "/billing";
+        }}
+      />
+    );
+  }
 
   if (showOtp) {
     return (

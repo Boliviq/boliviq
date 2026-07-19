@@ -7,8 +7,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, UserPlus, Shield, ScrollText, Building2, Lock } from "lucide-react";
+import { Loader2, UserPlus, Shield, ScrollText, Building2, Lock, CreditCard } from "lucide-react";
 import InviteMemberForm from "@/components/admin/InviteMemberForm";
+import AdminPricing from "@/components/admin/AdminPricing";
 
 const ROLES = ["admin", "manager", "member", "finance", "contractor", "agent", "viewer"];
 
@@ -98,6 +99,7 @@ export default function Admin() {
             { id: "members", label: "Members", icon: UserPlus },
             { id: "audit", label: "Audit Log", icon: ScrollText },
             { id: "workspace", label: "Workspace", icon: Building2 },
+            { id: "pricing", label: "Pricing & Plans", icon: CreditCard },
           ].map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)} className={`inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${tab === t.id ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
               <t.icon className="h-4 w-4" /> {t.label}
@@ -168,6 +170,8 @@ export default function Admin() {
             )}
           </div>
         )}
+
+        {tab === "pricing" && <AdminPricing />}
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

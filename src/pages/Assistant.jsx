@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Plus, Send, Sparkles, MessageSquare, Trash2 } from "lucide-react";
+import { Loader2, Plus, Send, Sparkles, MessageSquare, Trash2, Lock } from "lucide-react";
 
 const SUGGESTIONS = [
   "Summarize my deal pipeline",
@@ -21,6 +21,7 @@ export default function Assistant() {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
+  const [aiState, setAiState] = useState({ checked: false, aiAccess: false, unlimited: false });
   const scrollRef = useRef(null);
   const { toast } = useToast();
 
@@ -34,6 +35,16 @@ export default function Assistant() {
     setLoadingConvos(false);
   };
 
+  const checkAi = async () => {
+    if (!activeWorkspaceId) { setAiState({ checked: false, aiAccess: false, unlimited: false }); return; }
+    try {
+      const ent = await base44.functions.invoke("checkEntitlement", { workspace_id: activeWorkspaceId, feature: "ai_access" });
+      setAiState({ checked: true, aiAccess: !!ent.data?.enabled, unlimited: !!ent.data?.unlimited });
+    } catch {
+      setAiState({ checked: true, aiAccess: false, unlimited: false });
+    }
+  };
+
   const loadMessages = async (id) => {
     if (!id) { setMessages([]); return; }
     try {
@@ -42,7 +53,7 @@ export default function Assistant() {
     } catch { toast({ title: "Could not load messages", variant: "destructive" }); }
   };
 
-  useEffect(() => { loadConversations(); }, [activeWorkspaceId]);
+  useEffect(() => { loadConversations(); checkAi(); }, [activeWorkspaceId]);
   useEffect(() => { loadMessages(activeId); }, [activeId]);
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [messages]);
 
@@ -59,7 +70,6 @@ export default function Assistant() {
     e?.stopPropagation();
     if (!confirm("Delete this conversation and its messages?")) return;
     try {
-      const msgs = await base44.entities.Message.filter({ conversation_id: c.id });
       await base44.entities.Message.deleteMany({ conversation_id: c.id });
       await base44.entities.Conversation.delete(c.id);
       if (activeId === c.id) { setActiveId(null); setMessages([]); }
@@ -86,10 +96,18 @@ Contacts (${(contacts || []).length}): ${contactSummary || "none"}`;
   const send = async (text) => {
     const content = (text ?? input).trim();
     if (!content || sending) return;
-    let convoId = activeId;
     setSending(true);
     setInput("");
     try {
+      // Server-side AI entitlement gate
+      const ent = await base44.functions.invoke("checkEntitlement", { workspace_id: activeWorkspaceId, feature: "ai_access" });
+      if (!ent.data?.enabled) {
+        toast({ title: "AI not included", description: "Upgrade to an AI plan to use the assistant.", variant: "destructive" });
+        setSending(false);
+        return;
+      }
+
+      let convoId = activeId;
       if (!convoId) {
         const c = await base44.entities.Conversation.create({ workspace_id: activeWorkspaceId, title: content.slice(0, 40) });
         convoId = c.id;
@@ -98,6 +116,20 @@ Contacts (${(contacts || []).length}): ${contactSummary || "none"}`;
       }
       const userMsg = await base44.entities.Message.create({ conversation_id: convoId, role: "user", content });
       setMessages((prev) => [...prev, userMsg]);
+
+      // Token metering — skip for unlimited AI plans (server-side bypass in chargeCredits too)
+      if (!ent.data.unlimited) {
+        try {
+          await base44.functions.invoke("chargeCredits", {
+            workspace_id: activeWorkspaceId, amount: 1, type: "charge",
+            reference: "ai.chat", idempotency_key: `ai_${convoId}_${userMsg.id}`,
+          });
+        } catch (err) {
+          toast({ title: "AI token required", description: err.message || "Buy more tokens or upgrade to an unlimited AI plan.", variant: "destructive" });
+          setSending(false);
+          return;
+        }
+      }
 
       const context = await buildContext();
       const transcript = [...messages, userMsg].map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`).join("\n");
@@ -168,12 +200,23 @@ Contacts (${(contacts || []).length}): ${contactSummary || "none"}`;
               <div className="h-full flex flex-col items-center justify-center text-center">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 mb-3"><Sparkles className="h-6 w-6 text-accent" /></span>
                 <h2 className="font-display text-lg font-semibold mb-1">Boliviq AI Assistant</h2>
-                <p className="text-sm text-muted-foreground mb-6 max-w-md">Ask anything about your deals, projects, and contacts — powered by your live workspace data.</p>
-                <div className="grid sm:grid-cols-2 gap-2 max-w-md w-full">
-                  {SUGGESTIONS.map((s) => (
-                    <button key={s} onClick={() => send(s)} className="text-left rounded-md border border-border bg-background px-3 py-2 text-sm hover:border-accent/40 transition-colors">{s}</button>
-                  ))}
-                </div>
+                {aiState.checked && !aiState.aiAccess ? (
+                  <div className="max-w-md">
+                    <p className="text-sm text-muted-foreground mb-4">AI is not included in your current plan. Upgrade to an AI plan to unlock the assistant.</p>
+                    <Link to="/billing" className="inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground">
+                      <Lock className="h-4 w-4" /> Upgrade to an AI plan
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm text-muted-foreground mb-6 max-w-md">Ask anything about your deals, projects, and contacts — powered by your live workspace data. {aiState.unlimited ? "Unlimited AI active." : "Each request consumes 1 AI token."}</p>
+                    <div className="grid sm:grid-cols-2 gap-2 max-w-md w-full">
+                      {SUGGESTIONS.map((s) => (
+                        <button key={s} onClick={() => send(s)} className="text-left rounded-md border border-border bg-background px-3 py-2 text-sm hover:border-accent/40 transition-colors">{s}</button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               messages.map((m) => (
