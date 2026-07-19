@@ -21,6 +21,7 @@ import Rewards from '@/pages/Rewards';
 import Analytics from '@/pages/Analytics';
 import Admin from '@/pages/Admin';
 import DealAlerts from '@/pages/DealAlerts';
+import KnowledgeBase from '@/pages/KnowledgeBase';
 import { WorkspaceProvider } from '@/lib/workspaceContext';
 
 const AuthenticatedApp = () => {
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
       <Route path="/analytics" element={<WorkspaceProvider><Analytics /></WorkspaceProvider>} />
       <Route path="/admin" element={<WorkspaceProvider><Admin /></WorkspaceProvider>} />
       <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
+      <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

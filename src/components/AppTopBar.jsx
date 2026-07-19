@@ -16,6 +16,7 @@ const NAV = [
   { to: "/workspaces", label: "Workspaces" },
   { to: "/billing", label: "Billing" },
   { to: "/admin", label: "Admin" },
+  { to: "/knowledge-base", label: "Knowledge" },
 ];
 
 export default function AppTopBar() {
