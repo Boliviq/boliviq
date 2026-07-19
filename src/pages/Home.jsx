@@ -9,6 +9,7 @@ import Marketplace from "@/components/boliviq/Marketplace";
 import Intelligence from "@/components/boliviq/Intelligence";
 import Economy from "@/components/boliviq/Economy";
 import Platform from "@/components/boliviq/Platform";
+import AudienceHub from "@/components/boliviq/AudienceHub";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <Overview />
         <Philosophy />
         <Ecosystem />
+        <AudienceHub />
         <Marketplace />
         <Intelligence />
         <Economy />

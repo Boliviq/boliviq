@@ -22,6 +22,7 @@ import Analytics from '@/pages/Analytics';
 import Admin from '@/pages/Admin';
 import DealAlerts from '@/pages/DealAlerts';
 import KnowledgeBase from '@/pages/KnowledgeBase';
+import ContractorTools from '@/pages/ContractorTools';
 import { WorkspaceProvider } from '@/lib/workspaceContext';
 
 const AuthenticatedApp = () => {
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
       <Route path="/admin" element={<WorkspaceProvider><Admin /></WorkspaceProvider>} />
       <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
       <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
+      <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
