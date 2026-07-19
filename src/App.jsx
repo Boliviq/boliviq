@@ -23,6 +23,10 @@ import Admin from '@/pages/Admin';
 import DealAlerts from '@/pages/DealAlerts';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import ContractorTools from '@/pages/ContractorTools';
+import HomeownerHome from '@/pages/HomeownerHome';
+import ContractorHome from '@/pages/ContractorHome';
+import AgentHome from '@/pages/AgentHome';
+import InvestorHome from '@/pages/InvestorHome';
 import { WorkspaceProvider } from '@/lib/workspaceContext';
 
 const AuthenticatedApp = () => {
@@ -68,6 +72,10 @@ const AuthenticatedApp = () => {
       <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
       <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
       <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
+      <Route path="/homeowner" element={<HomeownerHome />} />
+      <Route path="/contractor" element={<ContractorHome />} />
+      <Route path="/agent" element={<AgentHome />} />
+      <Route path="/investor" element={<InvestorHome />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

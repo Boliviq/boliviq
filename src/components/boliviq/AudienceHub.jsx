@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { Home, HardHat, Building2, TrendingUp, ArrowRight } from "lucide-react";
 
 const ROLES = [
-  { icon: Home, title: "Homeowners", desc: "Post repair, improvement, and project requests — free.", to: "/marketplace", cta: "Enter Marketplace" },
-  { icon: HardHat, title: "Contractors", desc: "Find work, post services, and use the estimator & scheduler.", to: "/contractor-tools", cta: "Contractor Tools", alt: { label: "Marketplace", to: "/marketplace" } },
-  { icon: Building2, title: "Real Estate Agents", desc: "List properties on/off MLS and reach the community.", to: "/marketplace", cta: "Enter Marketplace" },
-  { icon: TrendingUp, title: "Investors", desc: "Post off-market deals and find funding partners.", to: "/marketplace", cta: "Post a Deal" },
+  { icon: Home, title: "Homeowners", desc: "Post repair, improvement, and project requests — free.", to: "/homeowner", cta: "Homeowner Home", alt: { label: "Marketplace", to: "/marketplace" } },
+  { icon: HardHat, title: "Contractors", desc: "Estimate jobs, find work, and manage builds.", to: "/contractor", cta: "Contractor Home", alt: { label: "Tools", to: "/contractor-tools" } },
+  { icon: Building2, title: "Real Estate Agents", desc: "List properties on/off MLS and reach the community.", to: "/agent", cta: "Agent Home", alt: { label: "Marketplace", to: "/marketplace" } },
+  { icon: TrendingUp, title: "Investors", desc: "Post off-market deals and find funding partners.", to: "/investor", cta: "Investor Home", alt: { label: "Marketplace", to: "/marketplace" } },
 ];
 
 export default function AudienceHub() {
