@@ -6,7 +6,7 @@ import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Loader2, Search } from "lucide-react";
+import { Plus, Loader2, Search, Bell } from "lucide-react";
 import ListingForm from "@/components/marketplace/ListingForm";
 import ListingCard from "@/components/marketplace/ListingCard";
 
@@ -97,7 +97,10 @@ export default function Marketplace() {
             <h1 className="font-display text-2xl font-bold">Marketplace</h1>
             <p className="text-sm text-muted-foreground">Contractors, services, materials, and equipment.</p>
           </div>
-          <Button onClick={openCreate} className="gap-1.5"><Plus className="h-4 w-4" /> Add listing</Button>
+          <div className="flex items-center gap-2">
+            <Link to="/deal-alerts" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium hover:border-accent/50"><Bell className="h-4 w-4" /> Deal alerts</Link>
+            <Button onClick={openCreate} className="gap-1.5"><Plus className="h-4 w-4" /> Add listing</Button>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row gap-3 mb-6">

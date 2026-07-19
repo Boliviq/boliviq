@@ -1,0 +1,41 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "deal_alert_listing",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_alerts": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendDealAlerts",
+            "args": {
+              "source": "listing",
+              "entity_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send matching opportunity alerts",
+            "description": "Email subscribers in the area"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "MarketplaceListing"
+    }
+  },
+  "name": "Deal Alert \u2014 Listing Match",
+  "description": "When a new marketplace listing is created, email subscribed owners whose area and categories match the new opportunity."
+}

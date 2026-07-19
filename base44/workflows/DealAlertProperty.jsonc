@@ -1,0 +1,41 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "deal_alert_property",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_alerts": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendDealAlerts",
+            "args": {
+              "source": "property",
+              "entity_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send matching deal alerts",
+            "description": "Email subscribers in the area"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Property"
+    }
+  },
+  "name": "Deal Alert \u2014 Property Match",
+  "description": "When a new property is created, email subscribed owners whose area and criteria match the new deal."
+}
