@@ -22,6 +22,7 @@ import Analytics from '@/pages/Analytics';
 import Admin from '@/pages/Admin';
 import PermissionsMonitor from '@/pages/PermissionsMonitor';
 import SetupHealth from '@/pages/SetupHealth';
+import LaunchTimeline from '@/pages/LaunchTimeline';
 import DealAlerts from '@/pages/DealAlerts';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import ContractorTools from '@/pages/ContractorTools';
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
       <Route path="/admin" element={<WorkspaceProvider><Admin /></WorkspaceProvider>} />
       <Route path="/admin/permissions-monitor" element={<WorkspaceProvider><PermissionsMonitor /></WorkspaceProvider>} />
       <Route path="/admin/setup-health" element={<WorkspaceProvider><SetupHealth /></WorkspaceProvider>} />
+      <Route path="/launch-timeline" element={<LaunchTimeline />} />
       <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
       <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
       <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
