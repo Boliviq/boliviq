@@ -18,6 +18,7 @@ const NAV = [
   { to: "/workspaces", label: "Workspaces" },
   { to: "/billing", label: "Billing" },
   { to: "/admin", label: "Admin" },
+  { to: "/admin/permissions-monitor", label: "Permissions" },
   { to: "/knowledge-base", label: "Knowledge" },
 ];
 
