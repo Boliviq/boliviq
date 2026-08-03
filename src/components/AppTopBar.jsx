@@ -19,6 +19,7 @@ const NAV = [
   { to: "/billing", label: "Billing" },
   { to: "/admin", label: "Admin" },
   { to: "/admin/permissions-monitor", label: "Permissions" },
+  { to: "/admin/setup-health", label: "Setup" },
   { to: "/knowledge-base", label: "Knowledge" },
 ];
 
