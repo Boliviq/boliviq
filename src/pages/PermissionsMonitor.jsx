@@ -6,8 +6,8 @@ import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getBufferedEvents, clearBufferedEvents } from "@/lib/rlsMonitor";
-import { Loader2, ShieldAlert, Lock, Trash2, CheckCircle2, Database } from "lucide-react";
+import { getBufferedEvents, clearBufferedEvents, capture } from "@/lib/rlsMonitor";
+import { Loader2, ShieldAlert, Lock, Trash2, CheckCircle2, Database, FlaskConical } from "lucide-react";
 
 const pretty = (s) => (s || "").replace(/_/g, " ").replace(/\b\w/g, (x) => x.toUpperCase());
 
@@ -16,6 +16,7 @@ export default function PermissionsMonitor() {
   const [events, setEvents] = useState([]);
   const [buffered, setBuffered] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [testing, setTesting] = useState(false);
   const { toast } = useToast();
 
   const load = useCallback(async () => {
@@ -44,6 +45,24 @@ export default function PermissionsMonitor() {
       load();
     } catch (err) {
       toast({ title: "Update failed", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const runTest = async () => {
+    setTesting(true);
+    // Query the admin-only LedgerEntry as a non-admin path — RLS denies it,
+    // and capture() logs the denial. Expected to throw; that's the success case.
+    try {
+      await capture(
+        base44.entities.LedgerEntry.filter({}, "-created_date", 1),
+        { entity_name: "LedgerEntry", operation: "filter", workspace_id: activeWorkspaceId }
+      );
+      toast({ title: "No denial raised", description: "The test query was allowed — expected a denial." });
+    } catch (err) {
+      toast({ title: "Denial captured", description: String(err.message || err).slice(0, 120) });
+      load();
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -109,9 +128,15 @@ export default function PermissionsMonitor() {
               Row-level security denials captured for this workspace. Not visible to public visitors.
             </p>
           </div>
-          <Button variant="outline" onClick={clearAll} className="gap-1.5">
-            <Trash2 className="h-4 w-4" /> Clear resolved
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={runTest} disabled={testing} className="gap-1.5">
+              {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />}
+              {testing ? "Testing…" : "Test capture"}
+            </Button>
+            <Button variant="outline" onClick={clearAll} className="gap-1.5">
+              <Trash2 className="h-4 w-4" /> Clear resolved
+            </Button>
+          </div>
         </div>
 
         {buffered.length > 0 && (
