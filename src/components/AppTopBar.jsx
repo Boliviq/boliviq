@@ -22,6 +22,7 @@ const NAV = [
   { to: "/admin/setup-health", label: "Setup" },
   { to: "/admin/foundation-health", label: "Foundation" },
   { to: "/admin/security-audit", label: "Security" },
+  { to: "/admin/launch-monitor", label: "Launch" },
   { to: "/knowledge-base", label: "Knowledge" },
 ];
 

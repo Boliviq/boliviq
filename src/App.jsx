@@ -25,6 +25,7 @@ import PermissionsMonitor from '@/pages/PermissionsMonitor';
 import SetupHealth from '@/pages/SetupHealth';
 import FoundationHealth from '@/pages/FoundationHealth';
 import SecurityAudit from '@/pages/SecurityAudit';
+import LaunchMonitor from '@/pages/LaunchMonitor';
 import LaunchTimeline from '@/pages/LaunchTimeline';
 import DealAlerts from '@/pages/DealAlerts';
 import KnowledgeBase from '@/pages/KnowledgeBase';
@@ -89,6 +90,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin/setup-health" element={<WorkspaceProvider><SetupHealth /></WorkspaceProvider>} />
         <Route path="/admin/foundation-health" element={<WorkspaceProvider><FoundationHealth /></WorkspaceProvider>} />
         <Route path="/admin/security-audit" element={<WorkspaceProvider><SecurityAudit /></WorkspaceProvider>} />
+        <Route path="/admin/launch-monitor" element={<WorkspaceProvider><LaunchMonitor /></WorkspaceProvider>} />
         <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
         <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
         <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
