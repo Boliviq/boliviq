@@ -93,8 +93,12 @@ Deno.serve(async (req) => {
         const tokens = Number((session.metadata && session.metadata.tokens) || 0);
         if (tokens > 0) {
           const wallet = await ensureWallet(sr, workspaceId);
-          const newBalance = (wallet.balance || 0) + tokens;
-          await sr.entities.CreditWallet.update(wallet.id, { balance: newBalance });
+          await sr.entities.CreditWallet.updateMany(
+            { id: wallet.id },
+            { $inc: { balance: tokens } }
+          );
+          const updated = await sr.entities.CreditWallet.get(wallet.id);
+          const newBalance = updated.balance;
           await sr.entities.LedgerEntry.create({
             workspace_id: workspaceId, wallet_id: wallet.id, delta: tokens, type: 'pack_purchase',
             reference: session.id, idempotency_key: 'cs_' + session.id, balance_after: newBalance,
@@ -139,8 +143,12 @@ Deno.serve(async (req) => {
             const existing = await sr.entities.LedgerEntry.filter({ workspace_id: subs[0].workspace_id, idempotency_key: idemKey });
             if (!existing || !existing.length) {
               const wallet = await ensureWallet(sr, subs[0].workspace_id);
-              const newBalance = (wallet.balance || 0) + grant;
-              await sr.entities.CreditWallet.update(wallet.id, { balance: newBalance });
+              await sr.entities.CreditWallet.updateMany(
+                { id: wallet.id },
+                { $inc: { balance: grant } }
+              );
+              const updated = await sr.entities.CreditWallet.get(wallet.id);
+              const newBalance = updated.balance;
               await sr.entities.LedgerEntry.create({
                 workspace_id: subs[0].workspace_id, wallet_id: wallet.id, delta: grant, type: 'grant',
                 reference: invoice.id, idempotency_key: idemKey, balance_after: newBalance,

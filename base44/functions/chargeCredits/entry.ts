@@ -59,13 +59,20 @@ Deno.serve(async (req) => {
     const wallet = wallets[0];
     if (!wallet) return Response.json({ error: 'No credit wallet found', insufficient: true }, { status: 404 });
 
-    const balance = wallet.balance || 0;
-    if (balance < amount) {
-      return Response.json({ error: 'Insufficient AI credits. Purchase more credits or upgrade to an unlimited AI plan.', insufficient: true, balance }, { status: 402 });
+    // Atomic balance decrement: only succeeds if balance >= amount.
+    // This prevents race conditions where concurrent charges could overdraw.
+    const result = await sr.entities.CreditWallet.updateMany(
+      { id: wallet.id, balance: { $gte: amount } },
+      { $inc: { balance: -amount } }
+    );
+    if (!result.matched_count) {
+      return Response.json({ error: 'Insufficient AI credits. Purchase more credits or upgrade to an unlimited AI plan.', insufficient: true, balance: wallet.balance || 0 }, { status: 402 });
     }
 
-    const newBalance = balance - amount;
-    await sr.entities.CreditWallet.update(wallet.id, { balance: newBalance });
+    // Re-read to capture the actual post-deduction balance for the ledger.
+    const updated = await sr.entities.CreditWallet.get(wallet.id);
+    const newBalance = updated.balance;
+
     await sr.entities.LedgerEntry.create({
       workspace_id: workspaceId, wallet_id: wallet.id, delta: -amount, type,
       reference, idempotency_key: idempotencyKey, balance_after: newBalance,
