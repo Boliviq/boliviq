@@ -21,6 +21,7 @@ const NAV = [
   { to: "/admin/permissions-monitor", label: "Permissions" },
   { to: "/admin/setup-health", label: "Setup" },
   { to: "/admin/foundation-health", label: "Foundation" },
+  { to: "/admin/security-audit", label: "Security" },
   { to: "/knowledge-base", label: "Knowledge" },
 ];
 
