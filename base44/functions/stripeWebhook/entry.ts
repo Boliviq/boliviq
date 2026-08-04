@@ -3,6 +3,8 @@ import Stripe from 'npm:stripe@17.4.0';
 
 // 2026 pricing — price_id -> { plan, mode, tokens?, annual? }
 const CATALOG = {
+  'price_1Tv06uGIUtciLaIv1f90LIQP': { plan: 'homeowner_ai', mode: 'subscription' },
+  'price_1Tv06tGIUtciLaIvzJ4cl5nG': { plan: 'homeowner_ai', mode: 'subscription', annual: true },
   'price_1TuhKaGIUtciLaIvAwSZsSS5': { plan: 'professional', mode: 'subscription' },
   'price_1TuhKaGIUtciLaIvIpxDOqkj': { plan: 'professional', mode: 'subscription', annual: true },
   'price_1TuhKaGIUtciLaIvVcu8PYcC': { plan: 'team_professional', mode: 'subscription' },
@@ -28,8 +30,9 @@ const CATALOG = {
   'price_1Tueo3Ln5267sZgI6xc526py': { plan: null, mode: 'payment', tokens: 500, legacy: true },
 };
 
-// Monthly token grant added on each subscription renewal invoice.
-const MONTHLY_TOKEN_GRANT = {
+// Monthly credit grant added on each subscription renewal invoice.
+const MONTHLY_CREDIT_GRANT = {
+  homeowner_ai: 250,
   professional_ai: 10000,
   team_professional_ai: 50000,
 };
@@ -98,8 +101,8 @@ Deno.serve(async (req) => {
           });
           await sr.entities.AuditLog.create({
             workspace_id: workspaceId, actor_id: (session.metadata && session.metadata.user_id) || 'system',
-            action: 'token_pack.purchased', target_type: 'credit_wallet', target_id: wallet.id,
-            metadata: { tokens },
+            action: 'credit_pack.purchased', target_type: 'credit_wallet', target_id: wallet.id,
+            metadata: { credits: tokens },
           });
         }
       }
@@ -123,14 +126,14 @@ Deno.serve(async (req) => {
         await sr.entities.Workspace.update(subs[0].workspace_id, { plan: 'free' });
       }
     } else if (event.type === 'invoice.paid') {
-      // Monthly token grant on subscription renewal (token-metered AI plans only).
+      // Monthly credit grant on subscription renewal (credit-metered AI plans only).
       const invoice = event.data.object;
       const subId = invoice.subscription;
       if (subId) {
         const subs = await sr.entities.Subscription.filter({ stripe_subscription_id: subId });
         if (subs && subs[0]) {
           const plan = subs[0].plan;
-          const grant = MONTHLY_TOKEN_GRANT[plan] || 0;
+          const grant = MONTHLY_CREDIT_GRANT[plan] || 0;
           if (grant > 0) {
             const idemKey = 'invoice_' + invoice.id;
             const existing = await sr.entities.LedgerEntry.filter({ workspace_id: subs[0].workspace_id, idempotency_key: idemKey });
@@ -144,7 +147,7 @@ Deno.serve(async (req) => {
               });
               await sr.entities.AuditLog.create({
                 workspace_id: subs[0].workspace_id, actor_id: 'system',
-                action: 'token_grant.monthly', target_type: 'credit_wallet', target_id: wallet.id,
+                action: 'credit_grant.monthly', target_type: 'credit_wallet', target_id: wallet.id,
                 metadata: { grant, plan, invoice_id: invoice.id },
               });
             }

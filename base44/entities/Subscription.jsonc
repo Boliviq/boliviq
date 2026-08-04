@@ -9,6 +9,7 @@
       "type": "string",
       "enum": [
         "free",
+        "homeowner_ai",
         "professional",
         "team_professional",
         "professional_ai",

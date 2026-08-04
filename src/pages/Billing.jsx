@@ -104,7 +104,7 @@ export default function Billing() {
           </span>
           <h1 className="font-display text-2xl font-bold">Billing & Plans</h1>
         </div>
-        <p className="text-muted-foreground mb-8">Choose your membership, manage AI tokens, and sync with Stripe.</p>
+        <p className="text-muted-foreground mb-8">Choose your membership, manage AI credits, and sync with Stripe.</p>
 
         {onboardingPlan && (
           <div className="mb-6 rounded-lg border border-accent/40 bg-accent/5 p-4 flex items-center gap-2 text-sm">
@@ -126,12 +126,12 @@ export default function Billing() {
             )}
           </div>
           <div className="rounded-lg border border-border bg-card p-5">
-            <div className="text-xs uppercase tracking-wide text-muted-foreground">AI tokens</div>
+            <div className="text-xs uppercase tracking-wide text-muted-foreground">AI credits</div>
             <div className="mt-1 text-xl font-semibold flex items-center gap-2">
               <Coins className="h-4 w-4 text-accent" /> {balance.toLocaleString()}
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              {isUnlimited ? "Unlimited AI — tokens not used" : hasTokens ? "Token-metered AI plan" : "Buy tokens with an AI plan"}
+              {isUnlimited ? "Unlimited AI — credits not used" : hasTokens ? "Credit-metered AI plan" : "Buy credits with an AI plan"}
             </div>
           </div>
           <div className="rounded-lg border border-border bg-card p-5">
@@ -190,13 +190,13 @@ export default function Billing() {
         </div>
 
         {/* AI Tokens */}
-        <h2 className="font-display text-lg font-semibold mb-1">AI tokens</h2>
+        <h2 className="font-display text-lg font-semibold mb-1">AI credits</h2>
         <p className="text-sm text-muted-foreground mb-4">
           {isUnlimited
-            ? "Your plan includes unlimited AI — no tokens are deducted."
+            ? "Your plan includes unlimited AI — no credits are deducted."
             : hasTokens
-              ? "Top up tokens anytime. Every AI request consumes tokens from your shared workspace wallet."
-              : "Token packs are available on AI plans. Upgrade to Professional + AI or higher to use AI."}
+              ? "Top up credits anytime. Every AI request consumes credits from your shared workspace wallet."
+              : "Credit packs are available on AI plans. Upgrade to Professional + AI or higher to use AI."}
         </p>
         <div className="grid sm:grid-cols-3 gap-4 mb-10">
           {TOKEN_PACKS.map((pack) => (
@@ -206,14 +206,14 @@ export default function Billing() {
                 {pack.popular && <span className="text-[10px] uppercase tracking-wide rounded px-2 py-0.5 bg-accent/15 text-accent">Popular</span>}
               </div>
               <div className="mt-1 text-2xl font-bold">{fmtPrice(pack.price)}</div>
-              <div className="text-sm text-muted-foreground">{pack.tokens.toLocaleString()} tokens</div>
+              <div className="text-sm text-muted-foreground">{pack.tokens.toLocaleString()} credits</div>
               <Button
                 className="mt-4"
                 variant={pack.popular ? "default" : "outline"}
                 disabled={!canManage || !hasTokens || busy === pack.id}
                 onClick={() => startCheckout(pack.priceId, pack.id)}
               >
-                {busy === pack.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buy tokens"}
+                {busy === pack.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buy credits"}
               </Button>
             </div>
           ))}
@@ -227,7 +227,7 @@ export default function Billing() {
           )}
           {!canManage && <p className="text-xs text-muted-foreground">Only workspace owners and admins can manage billing.</p>}
           {isUnlimited && (
-            <span className="inline-flex items-center gap-1.5 text-sm text-accent"><InfinityIcon className="h-4 w-4" /> Unlimited AI active — no token deductions</span>
+            <span className="inline-flex items-center gap-1.5 text-sm text-accent"><InfinityIcon className="h-4 w-4" /> Unlimited AI active — no credit deductions</span>
           )}
         </div>
       </div>

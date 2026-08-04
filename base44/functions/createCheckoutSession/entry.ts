@@ -3,6 +3,9 @@ import Stripe from 'npm:stripe@17.4.0';
 
 // 2026 pricing — price_id -> { plan, mode, interval?, tokens? }
 const CATALOG = {
+  // Homeowner + AI
+  'price_1Tv06uGIUtciLaIv1f90LIQP': { plan: 'homeowner_ai', mode: 'subscription', interval: 'month' },
+  'price_1Tv06tGIUtciLaIvzJ4cl5nG': { plan: 'homeowner_ai', mode: 'subscription', interval: 'year' },
   // Professional
   'price_1TuhKaGIUtciLaIvAwSZsSS5': { plan: 'professional', mode: 'subscription', interval: 'month' },
   'price_1TuhKaGIUtciLaIvIpxDOqkj': { plan: 'professional', mode: 'subscription', interval: 'year' },

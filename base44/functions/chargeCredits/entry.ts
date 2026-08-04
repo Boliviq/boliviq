@@ -4,6 +4,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 const UNLIMITED_AI_PLANS = new Set(['professional_ai_unlimited', 'team_ai_unlimited']);
 // Plans that include any AI access.
 const AI_PLANS = new Set([
+  'homeowner_ai',
   'professional_ai', 'team_professional_ai',
   'professional_ai_unlimited', 'team_ai_unlimited',
 ]);
@@ -56,11 +57,11 @@ Deno.serve(async (req) => {
 
     const wallets = await sr.entities.CreditWallet.filter({ workspace_id: workspaceId });
     const wallet = wallets[0];
-    if (!wallet) return Response.json({ error: 'No token wallet found', insufficient: true }, { status: 404 });
+    if (!wallet) return Response.json({ error: 'No credit wallet found', insufficient: true }, { status: 404 });
 
     const balance = wallet.balance || 0;
     if (balance < amount) {
-      return Response.json({ error: 'Insufficient AI tokens. Purchase more tokens or upgrade to an unlimited AI plan.', insufficient: true, balance }, { status: 402 });
+      return Response.json({ error: 'Insufficient AI credits. Purchase more credits or upgrade to an unlimited AI plan.', insufficient: true, balance }, { status: 402 });
     }
 
     const newBalance = balance - amount;
