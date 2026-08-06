@@ -45,9 +45,11 @@ export default function Admin() {
   const invite = async ({ email, role: memberRole }) => {
     setBusy(true);
     try {
-      await base44.users.inviteUser(email, "user");
-      await base44.entities.WorkspaceMembership.create({ workspace_id: activeWorkspaceId, user_id: email, role: memberRole, status: "invited" });
-      await base44.entities.AuditLog.create({ workspace_id: activeWorkspaceId, actor_id: "system", action: "member.invited", target_type: "user", metadata: { email, role: memberRole } });
+      await base44.functions.invoke("inviteWorkspaceMember", {
+        workspace_id: activeWorkspaceId,
+        email,
+        role: memberRole,
+      });
       toast({ title: `Invited ${email}` });
       setDialogOpen(false);
       load();

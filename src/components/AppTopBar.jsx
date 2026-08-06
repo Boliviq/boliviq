@@ -37,9 +37,9 @@ export default function AppTopBar() {
           </span>
           <span className="font-display font-bold tracking-tight text-sm">BOLIVIQ</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-3 lg:gap-4 overflow-x-auto no-scrollbar">
           {NAV.map((n) => (
-            <Link key={n.to} to={n.to} className="text-sm text-white/70 hover:text-accent transition-colors">
+            <Link key={n.to} to={n.to} className="text-xs lg:text-sm text-white/70 hover:text-accent transition-colors whitespace-nowrap">
               {n.label}
             </Link>
           ))}

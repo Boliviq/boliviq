@@ -79,9 +79,12 @@ Respond as the Assistant to the last Visitor message:`;
     // Store conversation + capture lead
     let conversationId = body.conversationId;
     try {
+      // Use a system workspace ID for public chatbot conversations.
+      // These are visible only to platform admins via the admin console.
+      const SYSTEM_WORKSPACE_ID = 'system_public';
       if (!conversationId) {
         const conv = await sr.entities.Conversation.create({
-          workspace_id: 'public',
+          workspace_id: SYSTEM_WORKSPACE_ID,
           title: `Website chat — ${visitorId.slice(0, 8)}`,
         });
         conversationId = conv.id;

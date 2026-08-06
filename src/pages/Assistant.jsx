@@ -132,7 +132,9 @@ Contacts (${(contacts || []).length}): ${contactSummary || "none"}`;
       }
 
       const context = await buildContext();
-      const transcript = [...messages, userMsg].map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`).join("\n");
+      // Reload latest messages from DB to avoid stale state in the transcript.
+      const latestMsgs = await base44.entities.Message.filter({ conversation_id: convoId }, "created_date", 30).catch(() => [userMsg]);
+      const transcript = (latestMsgs.length ? latestMsgs : [userMsg]).map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`).join("\n");
       const prompt = `You are Boliviq AI, an expert real-estate and construction operating assistant. Use the workspace context below to give concise, actionable answers. If data is missing, say so and suggest next steps.\n\n${context}\n\nConversation:\n${transcript}\n\nAssistant:`;
 
       const res = await base44.integrations.Core.InvokeLLM({ prompt, model: "automatic" });

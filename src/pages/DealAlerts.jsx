@@ -26,7 +26,10 @@ export default function DealAlerts() {
     try {
       const user = await base44.auth.me();
       setMe(user);
-      const data = await base44.entities.DealAlert.filter({}, "-created_date", 100);
+      const data = await base44.entities.DealAlert.filter(
+        activeWorkspaceId ? { workspace_id: activeWorkspaceId } : { created_by_id: me?.id },
+        "-created_date", 100
+      );
       setAlerts(data || []);
     } catch { toast({ title: "Could not load alerts", variant: "destructive" }); }
     setLoading(false);

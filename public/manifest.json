@@ -1,26 +1,25 @@
 {
-  "name": "Boliviq",
+  "name": "Boliviq — AI Real Estate & Construction OS",
   "short_name": "Boliviq",
-  "description": "AI-powered operating system for real estate and construction.",
+  "description": "AI-powered operating system for real estate and construction professionals. Find better deals, build bigger profits.",
   "start_url": "/",
-  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#0a1424",
   "theme_color": "#0a1424",
-  "orientation": "portrait-primary",
-  "categories": ["business", "productivity", "finance"],
   "icons": [
     {
       "src": "https://media.base44.com/images/public/6a5b9c2da4597c6efb8924d5/1689574f5_generated_image.png",
-      "sizes": "512x512",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
       "src": "https://media.base44.com/images/public/6a5b9c2da4597c6efb8924d5/1689574f5_generated_image.png",
-      "sizes": "192x192",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["business", "productivity", "finance"]
 }

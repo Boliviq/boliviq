@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useWorkspace } from "@/lib/workspaceContext";
 import { base44 } from "@/api/base44Client";
+import AppTopBar from "@/components/AppTopBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -42,6 +44,7 @@ export default function Workspaces() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <AppTopBar />
       <div className="max-w-3xl mx-auto px-6 py-12">
         <div className="flex items-center gap-3 mb-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-accent/40 bg-accent/10">
