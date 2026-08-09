@@ -1,0 +1,104 @@
+{
+  "name": "SecurityEvent",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "description": "Category of security event (e.g. auth_failed, rls_denied, stripe_sig_invalid, idor_attempt, prompt_injection, rate_limited, privilege_escalation)."
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "info"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Actor user ID when known."
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "Affected workspace when applicable."
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Session or request identifier when available."
+    },
+    "source_ip": {
+      "type": "string",
+      "description": "Privacy-safe network identifier when exposed by the platform."
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "route": {
+      "type": "string",
+      "description": "Request path or backend function name where the event occurred."
+    },
+    "target_resource": {
+      "type": "string",
+      "description": "Entity or resource the event targeted."
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "denied",
+        "blocked",
+        "failed",
+        "logged"
+      ],
+      "default": "logged"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Plain-language explanation of why the event was recorded."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Non-secret contextual metadata. Must never contain secrets, tokens, or PII."
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "event_type",
+    "severity"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

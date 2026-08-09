@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+import { rateLimited } from '../../shared/rateLimiter.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -11,6 +12,11 @@ Deno.serve(async (req) => {
     const code = (body.code || '').toString().trim().toUpperCase();
     if (!workspaceId || !code) {
       return Response.json({ error: 'workspace_id and code are required' }, { status: 400 });
+    }
+
+    // Rate limit: max 5 coupon redemptions per user per minute.
+    if (rateLimited('coupon:' + user.id, 5)) {
+      return Response.json({ error: 'Too many coupon attempts. Please wait a moment.' }, { status: 429 });
     }
 
     const sr = base44.asServiceRole;

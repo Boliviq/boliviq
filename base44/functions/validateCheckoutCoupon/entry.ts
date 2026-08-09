@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import Stripe from 'npm:stripe@17.4.0';
+import { rateLimited } from '../../shared/rateLimiter.ts';
 
 // Validates a coupon code for checkout use.
 // Supports percentage and fixed-amount discounts.
@@ -25,6 +26,11 @@ export default async function(req) {
     const amount = Number(body.amount) || 0;
     if (!workspaceId || !code) {
       return Response.json({ error: 'workspace_id and code are required' }, { status: 400 });
+    }
+
+    // Rate limit: max 10 coupon validations per user per minute.
+    if (rateLimited('validate_coupon:' + user.id, 10)) {
+      return Response.json({ error: 'Too many coupon attempts. Please wait a moment.' }, { status: 429 });
     }
 
     const sr = base44.asServiceRole;

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+import { rateLimited } from '../../shared/rateLimiter.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -9,6 +10,11 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const name = (body.name || '').toString().trim();
     if (!name) return Response.json({ error: 'Workspace name is required' }, { status: 400 });
+
+    // Rate limit: max 3 workspace creations per user per 10 minutes.
+    if (rateLimited('create_ws:' + user.id, 3, 600_000)) {
+      return Response.json({ error: 'Too many workspace creation attempts. Please wait a few minutes.' }, { status: 429 });
+    }
 
     const slug = (body.slug || name)
       .toString()

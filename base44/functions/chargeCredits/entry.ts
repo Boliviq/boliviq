@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+import { rateLimited } from '../../shared/rateLimiter.ts';
 
 // Plans where AI is unlimited — token deduction is bypassed server-side.
 const UNLIMITED_AI_PLANS = new Set(['professional_ai_unlimited', 'team_ai_unlimited']);
@@ -24,6 +25,11 @@ Deno.serve(async (req) => {
 
     if (!workspaceId || !amount || amount <= 0 || !idempotencyKey) {
       return Response.json({ error: 'workspace_id, positive amount, and idempotency_key are required' }, { status: 400 });
+    }
+
+    // Rate limit: max 60 AI credit charges per user per minute.
+    if (rateLimited('credits:' + user.id, 60)) {
+      return Response.json({ error: 'Rate limit exceeded for AI usage. Please slow down.' }, { status: 429 });
     }
 
     const sr = base44.asServiceRole;

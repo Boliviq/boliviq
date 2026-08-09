@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 import Stripe from 'npm:stripe@17.4.0';
 import { CATALOG } from '../../shared/billingCatalog.ts';
+import { rateLimited } from '../../shared/rateLimiter.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -12,6 +13,11 @@ Deno.serve(async (req) => {
     const workspaceId = (body.workspace_id || '').toString().trim();
     const priceId = (body.price_id || '').toString().trim();
     if (!workspaceId || !priceId) return Response.json({ error: 'workspace_id and price_id are required' }, { status: 400 });
+
+    // Rate limit: max 10 checkout sessions per user per minute.
+    if (rateLimited('checkout:' + user.id, 10)) {
+      return Response.json({ error: 'Too many checkout requests. Please wait a moment.' }, { status: 429 });
+    }
 
     const item = CATALOG[priceId];
     if (!item) return Response.json({ error: 'Unknown price' }, { status: 400 });
@@ -39,7 +45,7 @@ Deno.serve(async (req) => {
       await base44.asServiceRole.entities.Workspace.update(workspaceId, { stripe_customer_id: customerId, billing_source: 'stripe' });
     }
 
-    const origin = req.headers.get('origin') || 'https://boliviq-os-pro.base44.app';
+    const origin = req.headers.get('origin') || 'https://boliviq.com';
     const sessionOpts = {
       mode: item.mode,
       customer: customerId,
