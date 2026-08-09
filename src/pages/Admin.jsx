@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, UserPlus, Shield, ScrollText, Building2, Lock, CreditCard } from "lucide-react";
+import { Loader2, UserPlus, Shield, ScrollText, Building2, Lock, CreditCard, X } from "lucide-react";
 import InviteMemberForm from "@/components/admin/InviteMemberForm";
 import AdminPricing from "@/components/admin/AdminPricing";
 
@@ -28,14 +28,11 @@ export default function Admin() {
     if (!activeWorkspaceId) { setLoading(false); return; }
     setLoading(true);
     try {
-      const [m, w, a] = await Promise.all([
-        base44.entities.WorkspaceMembership.filter({ workspace_id: activeWorkspaceId }, "created_date", 100).catch(() => []),
-        base44.entities.Workspace.filter({ id: activeWorkspaceId }).catch(() => []),
-        base44.entities.AuditLog.filter({ workspace_id: activeWorkspaceId }, "-created_date", 50).catch(() => []),
-      ]);
-      setMembers(m || []);
-      setWorkspace((w && w[0]) || null);
-      setAudit(a || []);
+      const res = await base44.functions.invoke("manageWorkspaceMembers", { workspace_id: activeWorkspaceId, action: "list" });
+      const data = (res && res.data) || res || {};
+      setMembers(data.members || []);
+      setWorkspace(data.workspace || null);
+      setAudit(data.audit || []);
     } catch { toast({ title: "Could not load admin data", variant: "destructive" }); }
     setLoading(false);
   };
@@ -45,9 +42,11 @@ export default function Admin() {
   const invite = async ({ email, role: memberRole }) => {
     setBusy(true);
     try {
-      await base44.users.inviteUser(email, "user");
-      await base44.entities.WorkspaceMembership.create({ workspace_id: activeWorkspaceId, user_id: email, role: memberRole, status: "invited" });
-      await base44.entities.AuditLog.create({ workspace_id: activeWorkspaceId, actor_id: "system", action: "member.invited", target_type: "user", metadata: { email, role: memberRole } });
+      await base44.functions.invoke("inviteWorkspaceMember", {
+        workspace_id: activeWorkspaceId,
+        email,
+        role: memberRole,
+      });
       toast({ title: `Invited ${email}` });
       setDialogOpen(false);
       load();
@@ -58,10 +57,23 @@ export default function Admin() {
 
   const changeRole = async (m, newRole) => {
     try {
-      await base44.entities.WorkspaceMembership.update(m.id, { role: newRole });
+      await base44.functions.invoke("manageWorkspaceMembers", {
+        workspace_id: activeWorkspaceId, action: "update_role", member_id: m.id, role: newRole,
+      });
       toast({ title: "Role updated" });
       load();
-    } catch (err) { toast({ title: "Update failed", description: err.message, variant: "destructive" }); }
+    } catch (err) { toast({ title: "Update failed", description: err.message || err.error, variant: "destructive" }); }
+  };
+
+  const removeMember = async (m) => {
+    if (!window.confirm(`Remove ${m.user_id} from this workspace?`)) return;
+    try {
+      await base44.functions.invoke("manageWorkspaceMembers", {
+        workspace_id: activeWorkspaceId, action: "remove", member_id: m.id,
+      });
+      toast({ title: "Member removed" });
+      load();
+    } catch (err) { toast({ title: "Remove failed", description: err.message || err.error, variant: "destructive" }); }
   };
 
   if (wsLoading || loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-6 w-6 animate-spin text-accent" /></div>;
@@ -122,9 +134,18 @@ export default function Admin() {
                       <div className="font-medium truncate">{m.user_id}</div>
                       <Badge variant="outline" className="mt-1 capitalize">{m.status}</Badge>
                     </div>
-                    <select value={m.role} onChange={(e) => changeRole(m, e.target.value)} className="rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-ring">
-                      {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-                    </select>
+                    {m.role === "owner" ? (
+                      <Badge variant="secondary" className="capitalize">Owner</Badge>
+                    ) : (
+                      <>
+                        <select value={m.role} onChange={(e) => changeRole(m, e.target.value)} className="rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-ring">
+                          {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                        <button onClick={() => removeMember(m)} title="Remove member" className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+                          <X className="h-4 w-4" />
+                        </button>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>

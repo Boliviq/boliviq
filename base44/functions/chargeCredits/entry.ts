@@ -1,9 +1,11 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+import { rateLimited } from '../../shared/rateLimiter.ts';
 
 // Plans where AI is unlimited — token deduction is bypassed server-side.
 const UNLIMITED_AI_PLANS = new Set(['professional_ai_unlimited', 'team_ai_unlimited']);
 // Plans that include any AI access.
 const AI_PLANS = new Set([
+  'homeowner_ai',
   'professional_ai', 'team_professional_ai',
   'professional_ai_unlimited', 'team_ai_unlimited',
 ]);
@@ -23,6 +25,11 @@ Deno.serve(async (req) => {
 
     if (!workspaceId || !amount || amount <= 0 || !idempotencyKey) {
       return Response.json({ error: 'workspace_id, positive amount, and idempotency_key are required' }, { status: 400 });
+    }
+
+    // Rate limit: max 60 AI credit charges per user per minute.
+    if (rateLimited('credits:' + user.id, 60)) {
+      return Response.json({ error: 'Rate limit exceeded for AI usage. Please slow down.' }, { status: 429 });
     }
 
     const sr = base44.asServiceRole;
@@ -56,15 +63,22 @@ Deno.serve(async (req) => {
 
     const wallets = await sr.entities.CreditWallet.filter({ workspace_id: workspaceId });
     const wallet = wallets[0];
-    if (!wallet) return Response.json({ error: 'No token wallet found', insufficient: true }, { status: 404 });
+    if (!wallet) return Response.json({ error: 'No credit wallet found', insufficient: true }, { status: 404 });
 
-    const balance = wallet.balance || 0;
-    if (balance < amount) {
-      return Response.json({ error: 'Insufficient AI tokens. Purchase more tokens or upgrade to an unlimited AI plan.', insufficient: true, balance }, { status: 402 });
+    // Atomic balance decrement: only succeeds if balance >= amount.
+    // This prevents race conditions where concurrent charges could overdraw.
+    const result = await sr.entities.CreditWallet.updateMany(
+      { id: wallet.id, balance: { $gte: amount } },
+      { $inc: { balance: -amount } }
+    );
+    if (!result.matched_count) {
+      return Response.json({ error: 'Insufficient AI credits. Purchase more credits or upgrade to an unlimited AI plan.', insufficient: true, balance: wallet.balance || 0 }, { status: 402 });
     }
 
-    const newBalance = balance - amount;
-    await sr.entities.CreditWallet.update(wallet.id, { balance: newBalance });
+    // Re-read to capture the actual post-deduction balance for the ledger.
+    const updated = await sr.entities.CreditWallet.get(wallet.id);
+    const newBalance = updated.balance;
+
     await sr.entities.LedgerEntry.create({
       workspace_id: workspaceId, wallet_id: wallet.id, delta: -amount, type,
       reference, idempotency_key: idempotencyKey, balance_after: newBalance,

@@ -21,7 +21,18 @@ export function WorkspaceProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
+      // Defense-in-depth: never fire entity queries for anonymous users.
+      // WorkspaceProvider should only mount inside ProtectedRoute, but this
+      // prevents any RLS denial from firing if it renders unauthenticated.
+      const authed = await base44.auth.isAuthenticated();
+      if (!authed) {
+        setLoading(false);
+        return;
+      }
       const me = await base44.auth.me();
+      // Activate any pending invites for this user before loading memberships,
+      // so a teammate who just registered/logged in sees their workspace immediately.
+      await base44.functions.invoke("acceptWorkspaceInvites", {}).catch(() => null);
       const ms = await base44.entities.WorkspaceMembership.filter({
         user_id: me.id,
         status: "active",

@@ -1,7 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { PLANS, TOKEN_PACKS, AI_MODE } from "@/data/billingCatalog";
-import { Check, X, Sparkles, Coins } from "lucide-react";
+import { Check, Sparkles, Coins } from "lucide-react";
 
 const fmtPrice = (n) => (Number(n) % 1 === 0 ? `$${Number(n)}` : `$${Number(n).toFixed(2)}`);
 

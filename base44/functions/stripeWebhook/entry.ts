@@ -1,45 +1,11 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 import Stripe from 'npm:stripe@17.4.0';
-
-// 2026 pricing — price_id -> { plan, mode, tokens?, annual? }
-const CATALOG = {
-  'price_1TuhKaGIUtciLaIvAwSZsSS5': { plan: 'professional', mode: 'subscription' },
-  'price_1TuhKaGIUtciLaIvIpxDOqkj': { plan: 'professional', mode: 'subscription', annual: true },
-  'price_1TuhKaGIUtciLaIvVcu8PYcC': { plan: 'team_professional', mode: 'subscription' },
-  'price_1TuhKaGIUtciLaIvILXy4Psw': { plan: 'team_professional', mode: 'subscription', annual: true },
-  'price_1TuhKaGIUtciLaIvIWw93Wci': { plan: 'professional_ai', mode: 'subscription' },
-  'price_1TuhKaGIUtciLaIvZTsKam5b': { plan: 'professional_ai', mode: 'subscription', annual: true },
-  'price_1TuhKaGIUtciLaIvMhfR2oie': { plan: 'team_professional_ai', mode: 'subscription' },
-  'price_1TuhKaGIUtciLaIvmdlYKLNn': { plan: 'team_professional_ai', mode: 'subscription', annual: true },
-  'price_1TuhKaGIUtciLaIvrsEpadrz': { plan: 'professional_ai_unlimited', mode: 'subscription' },
-  'price_1TuhKaGIUtciLaIvIVidXRIC': { plan: 'professional_ai_unlimited', mode: 'subscription', annual: true },
-  'price_1TuhKaGIUtciLaIvCHMv8mKB': { plan: 'team_ai_unlimited', mode: 'subscription' },
-  'price_1TuhKaGIUtciLaIvHs6J4o9l': { plan: 'team_ai_unlimited', mode: 'subscription', annual: true },
-  // Token packs
-  'price_1TuivvGIUtciLaIvjbZLSNyr': { plan: null, mode: 'payment', tokens: 5000 },
-  'price_1TuivvGIUtciLaIvxGRlnFg9': { plan: null, mode: 'payment', tokens: 15000 },
-  'price_1TuivvGIUtciLaIvUXBwho8Y': { plan: null, mode: 'payment', tokens: 50000 },
-  // Legacy (existing subscriptions preserved)
-  'price_1Tueo3Ln5267sZgIfFl7UJyL': { plan: 'professional_ai', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgIdCh7kPNB': { plan: 'professional_ai', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgIy5W6GwdA': { plan: 'team_professional_ai', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgILUU6ajRe': { plan: 'professional_ai_unlimited', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgIQeh80Ww8': { plan: 'team_ai_unlimited', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgI6xc526py': { plan: null, mode: 'payment', tokens: 500, legacy: true },
-};
-
-// Monthly token grant added on each subscription renewal invoice.
-const MONTHLY_TOKEN_GRANT = {
-  professional_ai: 10000,
-  team_professional_ai: 50000,
-};
-
-function planFromSubscription(sub) {
-  const item = sub.items && sub.items.data && sub.items.data[0];
-  const priceId = item && item.price && item.price.id;
-  const entry = priceId ? CATALOG[priceId] : null;
-  return entry && entry.plan ? entry.plan : null;
-}
+import {
+  CATALOG, MONTHLY_CREDIT_GRANT,
+  planFromSubscription, intervalFromSubscription,
+  subscriptionIdFromInvoice, periodEndFromSubscription,
+  billingMonthFromTimestamp,
+} from '../../shared/billingCatalog.ts';
 
 async function ensureWallet(sr, workspaceId) {
   const wallets = await sr.entities.CreditWallet.filter({ workspace_id: workspaceId });
@@ -47,19 +13,53 @@ async function ensureWallet(sr, workspaceId) {
   return await sr.entities.CreditWallet.create({ workspace_id: workspaceId, balance: 0, reserved: 0 });
 }
 
+// Idempotent credit grant: checks ledger BEFORE incrementing wallet.
+// Returns { idempotent: true } if already processed, { granted: true } otherwise.
+async function grantCreditsIdempotent(sr, workspaceId, amount, type, reference, idempotencyKey, auditAction, auditMeta) {
+  // Check idempotency FIRST — before any wallet mutation.
+  const existing = await sr.entities.LedgerEntry.filter({
+    workspace_id: workspaceId, idempotency_key: idempotencyKey,
+  });
+  if (existing && existing.length) {
+    return { idempotent: true, balance: existing[0].balance_after };
+  }
+  // Grant credits atomically.
+  const wallet = await ensureWallet(sr, workspaceId);
+  await sr.entities.CreditWallet.updateMany({ id: wallet.id }, { $inc: { balance: amount } });
+  const updated = await sr.entities.CreditWallet.get(wallet.id);
+  await sr.entities.LedgerEntry.create({
+    workspace_id: workspaceId, wallet_id: wallet.id, delta: amount, type,
+    reference, idempotency_key: idempotencyKey, balance_after: updated.balance,
+  });
+  await sr.entities.AuditLog.create({
+    workspace_id: workspaceId, actor_id: 'system',
+    action: auditAction, target_type: 'credit_wallet', target_id: wallet.id,
+    metadata: auditMeta,
+  });
+  return { idempotent: false, granted: true, balance: updated.balance };
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
     const rawBody = await req.text();
     const signature = req.headers.get('stripe-signature') || '';
     const secret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+
+    if (!secret) {
+      console.log('stripeWebhook: STRIPE_WEBHOOK_SECRET not configured');
+      return Response.json({ error: 'Webhook not configured' }, { status: 500 });
+    }
+
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
     let event;
     try {
       event = await stripe.webhooks.constructEventAsync(rawBody, signature, secret);
     } catch (err) {
-      return Response.json({ error: 'Invalid signature: ' + err.message }, { status: 400 });
+      // Don't leak signature details in the response.
+      console.log('stripeWebhook: signature verification failed');
+      return Response.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
     const sr = base44.asServiceRole;
@@ -70,37 +70,89 @@ Deno.serve(async (req) => {
       if (!workspaceId) return Response.json({ received: true });
 
       if (session.mode === 'subscription') {
-        const plan = (session.metadata && session.metadata.plan) || 'professional';
+        // Determine plan from the actual Stripe Price ID — NOT from client metadata.
         const subId = session.subscription;
-        const existing = await sr.entities.Subscription.filter({ workspace_id: workspaceId });
+        let plan = null;
+        let interval = 'month';
+
+        if (subId) {
+          const sub = await stripe.subscriptions.retrieve(subId, { expand: ['items.data.price'] });
+          plan = planFromSubscription(sub);
+          interval = intervalFromSubscription(sub);
+        }
+
+        // Fail safely if we can't determine the plan from the price ID.
+        if (!plan) {
+          console.log('stripeWebhook: Could not determine plan from subscription price for session', session.id);
+          await sr.entities.AuditLog.create({
+            workspace_id: workspaceId, actor_id: 'system',
+            action: 'subscription.unknown_plan', target_type: 'subscription', target_id: subId,
+            metadata: { session_id: session.id },
+          });
+          return Response.json({ received: true });
+        }
+
+        // Idempotency: check if subscription record already exists for this Stripe sub ID.
+        const existing = await sr.entities.Subscription.filter({ stripe_subscription_id: subId });
         const data = {
           workspace_id: workspaceId, plan, status: 'active', billing_source: 'stripe',
           stripe_subscription_id: subId,
-          stripe_price_lookup_key: session.metadata && session.metadata.interval === 'year' ? 'annual' : 'month',
+          stripe_price_lookup_key: interval === 'year' ? 'annual' : 'month',
           seats: 1, cancel_at_period_end: false,
         };
-        if (existing && existing[0]) await sr.entities.Subscription.update(existing[0].id, data);
-        else await sr.entities.Subscription.create(data);
+        if (existing && existing[0]) {
+          await sr.entities.Subscription.update(existing[0].id, data);
+        } else {
+          await sr.entities.Subscription.create(data);
+        }
         await sr.entities.Workspace.update(workspaceId, { plan, billing_source: 'stripe', subscription_id: subId });
         await sr.entities.AuditLog.create({
           workspace_id: workspaceId, actor_id: (session.metadata && session.metadata.user_id) || 'system',
-          action: 'subscription.activated', target_type: 'subscription', target_id: subId, metadata: { plan },
+          action: 'subscription.activated', target_type: 'subscription', target_id: subId,
+          metadata: { plan, interval },
         });
       } else if (session.mode === 'payment') {
-        const tokens = Number((session.metadata && session.metadata.tokens) || 0);
-        if (tokens > 0) {
-          const wallet = await ensureWallet(sr, workspaceId);
-          const newBalance = (wallet.balance || 0) + tokens;
-          await sr.entities.CreditWallet.update(wallet.id, { balance: newBalance });
-          await sr.entities.LedgerEntry.create({
-            workspace_id: workspaceId, wallet_id: wallet.id, delta: tokens, type: 'pack_purchase',
-            reference: session.id, idempotency_key: 'cs_' + session.id, balance_after: newBalance,
-          });
+        // Verify payment is actually successful before granting credits.
+        if (session.payment_status !== 'paid') {
+          console.log('stripeWebhook: Checkout session not paid:', session.id, 'status:', session.payment_status);
           await sr.entities.AuditLog.create({
-            workspace_id: workspaceId, actor_id: (session.metadata && session.metadata.user_id) || 'system',
-            action: 'token_pack.purchased', target_type: 'credit_wallet', target_id: wallet.id,
-            metadata: { tokens },
+            workspace_id: workspaceId, actor_id: 'system',
+            action: 'credit_pack.unpaid', target_type: 'checkout_session', target_id: session.id,
+            metadata: { payment_status: session.payment_status },
           });
+          return Response.json({ received: true });
+        }
+
+        // Determine credit amount from the Stripe Price ID — NOT from client metadata.
+        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { expand: ['data.price'] });
+        const lineItem = lineItems && lineItems.data && lineItems.data[0];
+        let priceId = null;
+        if (lineItem && lineItem.price) {
+          priceId = typeof lineItem.price === 'object' ? lineItem.price.id : lineItem.price;
+        }
+        const entry = priceId ? CATALOG[priceId] : null;
+
+        if (!entry || !entry.tokens) {
+          console.log('stripeWebhook: Unknown or non-pack price for credit pack purchase:', priceId);
+          await sr.entities.AuditLog.create({
+            workspace_id: workspaceId, actor_id: 'system',
+            action: 'credit_pack.unknown_price', target_type: 'checkout_session', target_id: session.id,
+            metadata: { price_id: priceId },
+          });
+          return Response.json({ received: true });
+        }
+
+        const tokens = entry.tokens;
+        const idemKey = 'cs_' + session.id;
+
+        // Idempotency: check BEFORE granting — prevents duplicate credit on webhook redelivery.
+        const result = await grantCreditsIdempotent(
+          sr, workspaceId, tokens, 'pack_purchase', session.id, idemKey,
+          'credit_pack.purchased', { credits: tokens, price_id: priceId, session_id: session.id }
+        );
+
+        if (result.idempotent) {
+          return Response.json({ received: true, idempotent: true });
         }
       }
     } else if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
@@ -108,7 +160,8 @@ Deno.serve(async (req) => {
       const plan = planFromSubscription(sub);
       const subs = await sr.entities.Subscription.filter({ stripe_subscription_id: sub.id });
       if (subs && subs[0]) {
-        const periodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString().slice(0, 10) : undefined;
+        const periodEndTs = periodEndFromSubscription(sub);
+        const periodEnd = periodEndTs ? new Date(periodEndTs * 1000).toISOString().slice(0, 10) : undefined;
         const update = { status: sub.status, cancel_at_period_end: sub.cancel_at_period_end };
         if (plan) update.plan = plan;
         if (periodEnd) update.current_period_end = periodEnd;
@@ -121,33 +174,99 @@ Deno.serve(async (req) => {
       if (subs && subs[0]) {
         await sr.entities.Subscription.update(subs[0].id, { status: 'canceled' });
         await sr.entities.Workspace.update(subs[0].workspace_id, { plan: 'free' });
+        await sr.entities.AuditLog.create({
+          workspace_id: subs[0].workspace_id, actor_id: 'system',
+          action: 'subscription.canceled', target_type: 'subscription', target_id: sub.id,
+          metadata: {},
+        });
       }
     } else if (event.type === 'invoice.paid') {
-      // Monthly token grant on subscription renewal (token-metered AI plans only).
+      // Monthly credit grant on subscription renewal (credit-metered AI plans only).
       const invoice = event.data.object;
-      const subId = invoice.subscription;
+      const subId = subscriptionIdFromInvoice(invoice);
+
+      // Resolve workspace_id and plan — try subscription record first, then fall back to
+      // invoice parent subscription_details metadata. This handles the race condition where
+      // invoice.paid arrives before checkout.session.completed creates the subscription record.
+      let workspaceId = null;
+      let plan = null;
       if (subId) {
         const subs = await sr.entities.Subscription.filter({ stripe_subscription_id: subId });
         if (subs && subs[0]) {
-          const plan = subs[0].plan;
-          const grant = MONTHLY_TOKEN_GRANT[plan] || 0;
-          if (grant > 0) {
-            const idemKey = 'invoice_' + invoice.id;
-            const existing = await sr.entities.LedgerEntry.filter({ workspace_id: subs[0].workspace_id, idempotency_key: idemKey });
-            if (!existing || !existing.length) {
-              const wallet = await ensureWallet(sr, subs[0].workspace_id);
-              const newBalance = (wallet.balance || 0) + grant;
-              await sr.entities.CreditWallet.update(wallet.id, { balance: newBalance });
-              await sr.entities.LedgerEntry.create({
-                workspace_id: subs[0].workspace_id, wallet_id: wallet.id, delta: grant, type: 'grant',
-                reference: invoice.id, idempotency_key: idemKey, balance_after: newBalance,
-              });
-              await sr.entities.AuditLog.create({
-                workspace_id: subs[0].workspace_id, actor_id: 'system',
-                action: 'token_grant.monthly', target_type: 'credit_wallet', target_id: wallet.id,
-                metadata: { grant, plan, invoice_id: invoice.id },
-              });
-            }
+          workspaceId = subs[0].workspace_id;
+          plan = subs[0].plan;
+        }
+      }
+      if (!workspaceId && invoice.parent && invoice.parent.subscription_details) {
+        const sd = invoice.parent.subscription_details;
+        workspaceId = sd.metadata && sd.metadata.workspace_id;
+        plan = sd.metadata && sd.metadata.plan;
+      }
+
+      if (workspaceId && plan) {
+        const grant = MONTHLY_CREDIT_GRANT[plan] || 0;
+        if (grant > 0) {
+          // Determine billing month from the invoice period start (or creation date as fallback).
+          const ts = (invoice.period_start || invoice.created || Math.floor(Date.now() / 1000));
+          const billingMonth = billingMonthFromTimestamp(ts);
+          const newKey = 'grant_' + workspaceId + '_' + billingMonth;
+          const oldKey = 'invoice_' + invoice.id;
+
+          // Check both old and new idempotency keys for backward compatibility.
+          const existingNew = await sr.entities.LedgerEntry.filter({
+            workspace_id: workspaceId, idempotency_key: newKey,
+          });
+          const existingOld = await sr.entities.LedgerEntry.filter({
+            workspace_id: workspaceId, idempotency_key: oldKey,
+          });
+          if ((existingNew && existingNew.length) || (existingOld && existingOld.length)) {
+            return Response.json({ received: true, idempotent: true });
+          }
+
+          // Grant credits using the new month-based key (shared with scheduled monthly grants).
+          const wallet = await ensureWallet(sr, workspaceId);
+          await sr.entities.CreditWallet.updateMany({ id: wallet.id }, { $inc: { balance: grant } });
+          const updated = await sr.entities.CreditWallet.get(wallet.id);
+          await sr.entities.LedgerEntry.create({
+            workspace_id: workspaceId, wallet_id: wallet.id, delta: grant, type: 'grant',
+            reference: invoice.id, idempotency_key: newKey, balance_after: updated.balance,
+          });
+          await sr.entities.AuditLog.create({
+            workspace_id: workspaceId, actor_id: 'system',
+            action: 'credit_grant.monthly', target_type: 'credit_wallet', target_id: wallet.id,
+            metadata: { grant, plan, invoice_id: invoice.id, billing_month: billingMonth },
+          });
+        }
+      }
+    } else if (event.type === 'invoice.payment_failed') {
+      // Record payment failure — let Stripe's retry/dunning system operate.
+      const invoice = event.data.object;
+      const subId = subscriptionIdFromInvoice(invoice);
+      if (subId) {
+        const subs = await sr.entities.Subscription.filter({ stripe_subscription_id: subId });
+        if (subs && subs[0]) {
+          // Idempotency: check if we already processed this invoice's payment failure.
+          const existingAudits = await sr.entities.AuditLog.filter({
+            workspace_id: subs[0].workspace_id,
+            action: 'subscription.payment_failed',
+            target_id: subId,
+          });
+          const alreadyProcessed = existingAudits.some(
+            (a) => a.metadata && a.metadata.invoice_id === invoice.id
+          );
+          if (!alreadyProcessed) {
+            // Mark subscription as past_due — do NOT downgrade or delete (let Stripe retry).
+            await sr.entities.Subscription.update(subs[0].id, { status: 'past_due' });
+            await sr.entities.AuditLog.create({
+              workspace_id: subs[0].workspace_id, actor_id: 'system',
+              action: 'subscription.payment_failed', target_type: 'subscription', target_id: subId,
+              metadata: {
+                invoice_id: invoice.id,
+                attempt_count: invoice.attempt_count || 1,
+                next_attempt: invoice.next_payment_attempt || null,
+                amount_due: invoice.amount_due || 0,
+              },
+            });
           }
         }
       }
@@ -156,6 +275,6 @@ Deno.serve(async (req) => {
     return Response.json({ received: true });
   } catch (error) {
     console.log('stripeWebhook error:', error.message);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: 'Internal error' }, { status: 500 });
   }
 });

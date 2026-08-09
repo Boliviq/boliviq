@@ -3,6 +3,12 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 // 2026 pricing migration — 7 tiers.
 // null = unlimited. false = disabled. true = enabled (no numeric limit).
 const PLAN_ENTITLEMENTS = {
+  // Homeowner + AI — $9.99, credit-metered AI for homeowners.
+  homeowner_ai: {
+    marketplace: true, crm: false, construction_intelligence: false,
+    deal_calculator: true, ai_access: true, ai_unlimited: false,
+    ai_credits_monthly: 250, seats: 1,
+  },
   // Homeowner (FREE) — no AI, marketplace + basic tools only.
   free: {
     marketplace: true, crm: false, construction_intelligence: false,

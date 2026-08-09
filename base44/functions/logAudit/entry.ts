@@ -21,6 +21,12 @@ Deno.serve(async (req) => {
     if (!memberships || memberships.length === 0) {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
+    // Only workspace owners/admins can write audit log entries — prevents
+    // regular members from polluting the audit trail.
+    const role = memberships[0].role;
+    if (role !== 'owner' && role !== 'admin' && user.role !== 'admin') {
+      return Response.json({ error: 'Only workspace owners and admins can write audit entries' }, { status: 403 });
+    }
 
     const entry = { workspace_id: workspaceId, actor_id: user.id, action };
     if (body.target_type) entry.target_type = body.target_type;

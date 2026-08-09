@@ -1,13 +1,18 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import Home from '@/pages/Home';
 import Blueprint from '@/pages/Blueprint';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
 import Workspaces from '@/pages/Workspaces';
 import Billing from '@/pages/Billing';
 import Properties from '@/pages/Properties';
@@ -56,28 +61,38 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
+      {/* Public routes — no auth, no entity queries */}
       <Route path="/" element={<Home />} />
       <Route path="/blueprint" element={<Blueprint />} />
-      <Route path="/workspaces" element={<WorkspaceProvider><Workspaces /></WorkspaceProvider>} />
-      <Route path="/billing" element={<WorkspaceProvider><Billing /></WorkspaceProvider>} />
-      <Route path="/properties" element={<WorkspaceProvider><Properties /></WorkspaceProvider>} />
-      <Route path="/contacts" element={<WorkspaceProvider><Contacts /></WorkspaceProvider>} />
-      <Route path="/dashboard" element={<WorkspaceProvider><Dashboard /></WorkspaceProvider>} />
-      <Route path="/marketplace" element={<WorkspaceProvider><Marketplace /></WorkspaceProvider>} />
-      <Route path="/construction" element={<WorkspaceProvider><Construction /></WorkspaceProvider>} />
-      <Route path="/construction/:id" element={<WorkspaceProvider><ProjectDetail /></WorkspaceProvider>} />
-      <Route path="/assistant" element={<WorkspaceProvider><Assistant /></WorkspaceProvider>} />
-      <Route path="/rewards" element={<WorkspaceProvider><Rewards /></WorkspaceProvider>} />
-      <Route path="/analytics" element={<WorkspaceProvider><Analytics /></WorkspaceProvider>} />
-      <Route path="/admin" element={<WorkspaceProvider><Admin /></WorkspaceProvider>} />
-      <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
-      <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
-      <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
-      <Route path="/construction-estimator" element={<WorkspaceProvider><ConstructionEstimator /></WorkspaceProvider>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/homeowner" element={<HomeownerHome />} />
       <Route path="/contractor" element={<ContractorHome />} />
       <Route path="/agent" element={<AgentHome />} />
       <Route path="/investor" element={<InvestorHome />} />
+
+      {/* Authenticated routes — anonymous visitors redirect to login */}
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route path="/workspaces" element={<WorkspaceProvider><Workspaces /></WorkspaceProvider>} />
+        <Route path="/billing" element={<WorkspaceProvider><Billing /></WorkspaceProvider>} />
+        <Route path="/properties" element={<WorkspaceProvider><Properties /></WorkspaceProvider>} />
+        <Route path="/contacts" element={<WorkspaceProvider><Contacts /></WorkspaceProvider>} />
+        <Route path="/dashboard" element={<WorkspaceProvider><Dashboard /></WorkspaceProvider>} />
+        <Route path="/marketplace" element={<WorkspaceProvider><Marketplace /></WorkspaceProvider>} />
+        <Route path="/construction" element={<WorkspaceProvider><Construction /></WorkspaceProvider>} />
+        <Route path="/construction/:id" element={<WorkspaceProvider><ProjectDetail /></WorkspaceProvider>} />
+        <Route path="/assistant" element={<WorkspaceProvider><Assistant /></WorkspaceProvider>} />
+        <Route path="/rewards" element={<WorkspaceProvider><Rewards /></WorkspaceProvider>} />
+        <Route path="/analytics" element={<WorkspaceProvider><Analytics /></WorkspaceProvider>} />
+        <Route path="/admin" element={<WorkspaceProvider><Admin /></WorkspaceProvider>} />
+        <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
+        <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
+        <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
+        <Route path="/construction-estimator" element={<WorkspaceProvider><ConstructionEstimator /></WorkspaceProvider>} />
+      </Route>
+
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

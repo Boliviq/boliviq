@@ -1,0 +1,78 @@
+{
+  "name": "RlsEvent",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "The Base44 entity or table the denied operation targeted."
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "list",
+        "filter",
+        "get",
+        "create",
+        "update",
+        "delete",
+        "rpc",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "status_code": {
+      "type": "number",
+      "description": "HTTP status observed (e.g. 401, 403). Null when not applicable."
+    },
+    "error_message": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "description": "Request path or context where the denial occurred, when available."
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "workspace_id",
+    "entity_name"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+import { rateLimited } from '../../shared/rateLimiter.ts';
 
 Deno.serve(async (req) => {
   try {
@@ -11,6 +12,11 @@ Deno.serve(async (req) => {
     const code = (body.code || '').toString().trim().toUpperCase();
     if (!workspaceId || !code) {
       return Response.json({ error: 'workspace_id and code are required' }, { status: 400 });
+    }
+
+    // Rate limit: max 5 coupon redemptions per user per minute.
+    if (rateLimited('coupon:' + user.id, 5)) {
+      return Response.json({ error: 'Too many coupon attempts. Please wait a moment.' }, { status: 429 });
     }
 
     const sr = base44.asServiceRole;
@@ -41,8 +47,13 @@ Deno.serve(async (req) => {
     const wallet = wallets[0];
     if (!wallet) return Response.json({ error: 'No credit wallet found' }, { status: 404 });
 
-    const newBalance = (wallet.balance || 0) + amount;
-    await sr.entities.CreditWallet.update(wallet.id, { balance: newBalance });
+    // Atomic increment — prevents race conditions on concurrent redemptions.
+    await sr.entities.CreditWallet.updateMany(
+      { id: wallet.id },
+      { $inc: { balance: amount } }
+    );
+    const updated = await sr.entities.CreditWallet.get(wallet.id);
+    const newBalance = updated.balance;
     const newUsage = (coupon.usage_count || 0) + 1;
     const reached = coupon.max_uses && newUsage >= coupon.max_uses;
     await sr.entities.Coupon.update(coupon.id, {
