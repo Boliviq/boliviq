@@ -1,0 +1,45 @@
+{
+  "description": "Grants monthly AI credits to all active AI subscribers on the 1st of each month. Ensures annual subscribers receive monthly credits, not just on the annual invoice. Idempotent per workspace per billing month.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 1 * *",
+      "one_time_date": null,
+      "timezone": "America/Chicago",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Monthly Credit Grant",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "monthly_credit_grant",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "grant_credits": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "grantMonthlyCredits",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Grant monthly credits",
+            "description": "Issue monthly AI credits to active subscribers"
+          }
+        }
+      }
+    ]
+  }
+}

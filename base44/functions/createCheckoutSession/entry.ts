@@ -1,41 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 import Stripe from 'npm:stripe@17.4.0';
-
-// 2026 pricing — price_id -> { plan, mode, interval?, tokens? }
-const CATALOG = {
-  // Homeowner + AI
-  'price_1Tv06uGIUtciLaIv1f90LIQP': { plan: 'homeowner_ai', mode: 'subscription', interval: 'month' },
-  'price_1Tv06tGIUtciLaIvzJ4cl5nG': { plan: 'homeowner_ai', mode: 'subscription', interval: 'year' },
-  // Professional
-  'price_1TuhKaGIUtciLaIvAwSZsSS5': { plan: 'professional', mode: 'subscription', interval: 'month' },
-  'price_1TuhKaGIUtciLaIvIpxDOqkj': { plan: 'professional', mode: 'subscription', interval: 'year' },
-  // Team Professional
-  'price_1TuhKaGIUtciLaIvVcu8PYcC': { plan: 'team_professional', mode: 'subscription', interval: 'month' },
-  'price_1TuhKaGIUtciLaIvILXy4Psw': { plan: 'team_professional', mode: 'subscription', interval: 'year' },
-  // Professional + AI
-  'price_1TuhKaGIUtciLaIvIWw93Wci': { plan: 'professional_ai', mode: 'subscription', interval: 'month' },
-  'price_1TuhKaGIUtciLaIvZTsKam5b': { plan: 'professional_ai', mode: 'subscription', interval: 'year' },
-  // Team Professional + AI
-  'price_1TuhKaGIUtciLaIvMhfR2oie': { plan: 'team_professional_ai', mode: 'subscription', interval: 'month' },
-  'price_1TuhKaGIUtciLaIvmdlYKLNn': { plan: 'team_professional_ai', mode: 'subscription', interval: 'year' },
-  // Professional AI Unlimited
-  'price_1TuhKaGIUtciLaIvrsEpadrz': { plan: 'professional_ai_unlimited', mode: 'subscription', interval: 'month' },
-  'price_1TuhKaGIUtciLaIvIVidXRIC': { plan: 'professional_ai_unlimited', mode: 'subscription', interval: 'year' },
-  // Team AI Unlimited
-  'price_1TuhKaGIUtciLaIvCHMv8mKB': { plan: 'team_ai_unlimited', mode: 'subscription', interval: 'month' },
-  'price_1TuhKaGIUtciLaIvHs6J4o9l': { plan: 'team_ai_unlimited', mode: 'subscription', interval: 'year' },
-  // Token packs (one-time)
-  'price_1TuivvGIUtciLaIvjbZLSNyr': { plan: null, mode: 'payment', tokens: 5000 },
-  'price_1TuivvGIUtciLaIvxGRlnFg9': { plan: null, mode: 'payment', tokens: 15000 },
-  'price_1TuivvGIUtciLaIvUXBwho8Y': { plan: null, mode: 'payment', tokens: 50000 },
-  // Legacy prices (preserved for existing subscriptions)
-  'price_1Tueo3Ln5267sZgIfFl7UJyL': { plan: 'professional_ai', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgIdCh7kPNB': { plan: 'professional_ai', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgIy5W6GwdA': { plan: 'team_professional_ai', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgILUU6ajRe': { plan: 'professional_ai_unlimited', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgIQeh80Ww8': { plan: 'team_ai_unlimited', mode: 'subscription', legacy: true },
-  'price_1Tueo3Ln5267sZgI6xc526py': { plan: null, mode: 'payment', tokens: 500, legacy: true },
-};
+import { CATALOG } from '../../shared/billingCatalog.ts';
 
 Deno.serve(async (req) => {
   try {
