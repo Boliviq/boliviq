@@ -184,43 +184,58 @@ Deno.serve(async (req) => {
       // Monthly credit grant on subscription renewal (credit-metered AI plans only).
       const invoice = event.data.object;
       const subId = subscriptionIdFromInvoice(invoice);
+
+      // Resolve workspace_id and plan — try subscription record first, then fall back to
+      // invoice parent subscription_details metadata. This handles the race condition where
+      // invoice.paid arrives before checkout.session.completed creates the subscription record.
+      let workspaceId = null;
+      let plan = null;
       if (subId) {
         const subs = await sr.entities.Subscription.filter({ stripe_subscription_id: subId });
         if (subs && subs[0]) {
-          const plan = subs[0].plan;
-          const grant = MONTHLY_CREDIT_GRANT[plan] || 0;
-          if (grant > 0) {
-            // Determine billing month from the invoice period start (or creation date as fallback).
-            const ts = (invoice.period_start || invoice.created || Math.floor(Date.now() / 1000));
-            const billingMonth = billingMonthFromTimestamp(ts);
-            const newKey = 'grant_' + subs[0].workspace_id + '_' + billingMonth;
-            const oldKey = 'invoice_' + invoice.id;
+          workspaceId = subs[0].workspace_id;
+          plan = subs[0].plan;
+        }
+      }
+      if (!workspaceId && invoice.parent && invoice.parent.subscription_details) {
+        const sd = invoice.parent.subscription_details;
+        workspaceId = sd.metadata && sd.metadata.workspace_id;
+        plan = sd.metadata && sd.metadata.plan;
+      }
 
-            // Check both old and new idempotency keys for backward compatibility.
-            const existingNew = await sr.entities.LedgerEntry.filter({
-              workspace_id: subs[0].workspace_id, idempotency_key: newKey,
-            });
-            const existingOld = await sr.entities.LedgerEntry.filter({
-              workspace_id: subs[0].workspace_id, idempotency_key: oldKey,
-            });
-            if ((existingNew && existingNew.length) || (existingOld && existingOld.length)) {
-              return Response.json({ received: true, idempotent: true });
-            }
+      if (workspaceId && plan) {
+        const grant = MONTHLY_CREDIT_GRANT[plan] || 0;
+        if (grant > 0) {
+          // Determine billing month from the invoice period start (or creation date as fallback).
+          const ts = (invoice.period_start || invoice.created || Math.floor(Date.now() / 1000));
+          const billingMonth = billingMonthFromTimestamp(ts);
+          const newKey = 'grant_' + workspaceId + '_' + billingMonth;
+          const oldKey = 'invoice_' + invoice.id;
 
-            // Grant credits using the new month-based key (shared with scheduled monthly grants).
-            const wallet = await ensureWallet(sr, subs[0].workspace_id);
-            await sr.entities.CreditWallet.updateMany({ id: wallet.id }, { $inc: { balance: grant } });
-            const updated = await sr.entities.CreditWallet.get(wallet.id);
-            await sr.entities.LedgerEntry.create({
-              workspace_id: subs[0].workspace_id, wallet_id: wallet.id, delta: grant, type: 'grant',
-              reference: invoice.id, idempotency_key: newKey, balance_after: updated.balance,
-            });
-            await sr.entities.AuditLog.create({
-              workspace_id: subs[0].workspace_id, actor_id: 'system',
-              action: 'credit_grant.monthly', target_type: 'credit_wallet', target_id: wallet.id,
-              metadata: { grant, plan, invoice_id: invoice.id, billing_month: billingMonth },
-            });
+          // Check both old and new idempotency keys for backward compatibility.
+          const existingNew = await sr.entities.LedgerEntry.filter({
+            workspace_id: workspaceId, idempotency_key: newKey,
+          });
+          const existingOld = await sr.entities.LedgerEntry.filter({
+            workspace_id: workspaceId, idempotency_key: oldKey,
+          });
+          if ((existingNew && existingNew.length) || (existingOld && existingOld.length)) {
+            return Response.json({ received: true, idempotent: true });
           }
+
+          // Grant credits using the new month-based key (shared with scheduled monthly grants).
+          const wallet = await ensureWallet(sr, workspaceId);
+          await sr.entities.CreditWallet.updateMany({ id: wallet.id }, { $inc: { balance: grant } });
+          const updated = await sr.entities.CreditWallet.get(wallet.id);
+          await sr.entities.LedgerEntry.create({
+            workspace_id: workspaceId, wallet_id: wallet.id, delta: grant, type: 'grant',
+            reference: invoice.id, idempotency_key: newKey, balance_after: updated.balance,
+          });
+          await sr.entities.AuditLog.create({
+            workspace_id: workspaceId, actor_id: 'system',
+            action: 'credit_grant.monthly', target_type: 'credit_wallet', target_id: wallet.id,
+            metadata: { grant, plan, invoice_id: invoice.id, billing_month: billingMonth },
+          });
         }
       }
     } else if (event.type === 'invoice.payment_failed') {
