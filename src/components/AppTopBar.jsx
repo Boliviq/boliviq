@@ -6,6 +6,7 @@ import MobileNav from "@/components/MobileNav";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/deals", label: "Deal Discovery" },
   { to: "/analytics", label: "Analytics" },
   { to: "/properties", label: "CRM" },
   { to: "/marketplace", label: "Marketplace" },

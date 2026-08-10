@@ -16,6 +16,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import Workspaces from '@/pages/Workspaces';
 import Billing from '@/pages/Billing';
 import Properties from '@/pages/Properties';
+import DealDiscovery from '@/pages/DealDiscovery';
 import Contacts from '@/pages/Contacts';
 import Dashboard from '@/pages/Dashboard';
 import Marketplace from '@/pages/Marketplace';
@@ -86,6 +87,7 @@ const AuthenticatedApp = () => {
         <Route path="/workspaces" element={<WorkspaceProvider><Workspaces /></WorkspaceProvider>} />
         <Route path="/billing" element={<WorkspaceProvider><Billing /></WorkspaceProvider>} />
         <Route path="/properties" element={<WorkspaceProvider><Properties /></WorkspaceProvider>} />
+        <Route path="/deals" element={<WorkspaceProvider><DealDiscovery /></WorkspaceProvider>} />
         <Route path="/contacts" element={<WorkspaceProvider><Contacts /></WorkspaceProvider>} />
         <Route path="/dashboard" element={<WorkspaceProvider><Dashboard /></WorkspaceProvider>} />
         <Route path="/marketplace" element={<WorkspaceProvider><Marketplace /></WorkspaceProvider>} />

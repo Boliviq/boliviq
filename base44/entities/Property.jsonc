@@ -87,6 +87,50 @@
     "arv": {
       "type": "number"
     },
+    "asking_price": {
+      "type": "number"
+    },
+    "estimated_rehab": {
+      "type": "number"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["private", "public"],
+      "default": "private",
+      "description": "Public properties are discoverable by other workspaces via Deal Discovery — the Boliviq Marketplace deal-flow source."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["manual", "boliviq_marketplace", "mls", "public_records", "user_import", "partner_api"],
+      "default": "manual"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["on_market", "off_market"],
+      "default": "off_market"
+    },
+    "external_url": {
+      "type": "string"
+    },
+    "days_on_market": {
+      "type": "number"
+    },
+    "price_reduced": {
+      "type": "boolean",
+      "default": false
+    },
+    "distress_indicators": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["tax_delinquent", "foreclosure", "auction", "vacant", "absentee_owner", "code_violation", "price_reduction", "expired_listing", "probate"]
+      }
+    },
+    "data_confidence": {
+      "type": "string",
+      "enum": ["verified", "estimated"],
+      "default": "verified"
+    },
     "lien_encumbrance": {
       "type": "boolean",
       "default": false

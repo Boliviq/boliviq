@@ -1,0 +1,45 @@
+{
+  "description": "Runs the Deal Scout scan daily to check active, monitored Buy Boxes against currently-connected Deal Discovery sources and notify investors of new matches.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "America/Chicago",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Deal Scout Scan",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "deal_scout_scan",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_scan": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "dealScoutScan",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run Deal Scout scan",
+            "description": "Match active Buy Boxes against connected sources and notify investors"
+          }
+        }
+      }
+    ]
+  }
+}

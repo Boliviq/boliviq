@@ -24,9 +24,10 @@ export default function PropertyCard({ property, onClick, dragging }) {
           {[p.city, p.state].filter(Boolean).join(", ")}
         </div>
       )}
-      {p.deal_strategy && (
-        <div className="mt-2">
-          <Badge variant="secondary" className="text-[10px]">{STRATEGY_LABELS[p.deal_strategy] || p.deal_strategy}</Badge>
+      {(p.deal_strategy || p.visibility === "public") && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {p.deal_strategy && <Badge variant="secondary" className="text-[10px]">{STRATEGY_LABELS[p.deal_strategy] || p.deal_strategy}</Badge>}
+          {p.visibility === "public" && <Badge variant="outline" className="text-[10px] border-accent/40 text-accent">Public</Badge>}
         </div>
       )}
       <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">

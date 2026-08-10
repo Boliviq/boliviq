@@ -1,0 +1,75 @@
+{
+  "name": "BuyBox",
+  "type": "object",
+  "properties": {
+    "workspace_id": { "type": "string" },
+    "name": { "type": "string" },
+    "markets": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Cities, counties, ZIPs, or landmark/keyword areas to match against."
+    },
+    "radius_miles": { "type": "number" },
+    "strategies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["fix_flip", "brrrr", "rental", "wholesale", "buy_hold", "development", "land", "value_add"]
+      }
+    },
+    "property_types": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "max_price": { "type": "number" },
+    "min_beds": { "type": "number" },
+    "min_baths": { "type": "number" },
+    "min_sqft": { "type": "number" },
+    "min_lot_acres": { "type": "number" },
+    "min_profit": { "type": "number" },
+    "min_roi_pct": { "type": "number" },
+    "max_rehab": { "type": "number" },
+    "on_off_market": {
+      "type": "string",
+      "enum": ["any", "on_market", "off_market"],
+      "default": "any"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "paused"],
+      "default": "active"
+    },
+    "monitor": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, the daily Deal Scout scan matches new opportunities against this Buy Box and notifies the owner."
+    },
+    "auto_add_to_pipeline": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, Deal Scout matches above the score threshold are automatically created as Property leads."
+    },
+    "last_scanned_date": { "type": "string", "format": "date-time" }
+  },
+  "required": ["workspace_id", "name"],
+  "rls": {
+    "read": {
+      "$or": [
+        { "created_by_id": "{{user.id}}" },
+        { "user_condition": { "role": "admin" } }
+      ]
+    },
+    "update": {
+      "$or": [
+        { "created_by_id": "{{user.id}}" },
+        { "user_condition": { "role": "admin" } }
+      ]
+    },
+    "delete": {
+      "$or": [
+        { "created_by_id": "{{user.id}}" },
+        { "user_condition": { "role": "admin" } }
+      ]
+    }
+  }
+}
