@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
+import { listWorkspaceRecords, createWorkspaceRecord, updateWorkspaceRecord } from "@/lib/workspaceRecords";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -24,8 +24,8 @@ export default function Construction() {
     setLoading(true);
     try {
       const [p, props] = await Promise.all([
-        base44.entities.ConstructionProject.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 200),
-        base44.entities.Property.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 200),
+        listWorkspaceRecords("ConstructionProject", activeWorkspaceId),
+        listWorkspaceRecords("Property", activeWorkspaceId),
       ]);
       setProjects(p || []);
       setProperties(props || []);
@@ -43,10 +43,10 @@ export default function Construction() {
   const save = async (form) => {
     try {
       if (editing) {
-        await base44.entities.ConstructionProject.update(editing.id, form);
+        await updateWorkspaceRecord("ConstructionProject", activeWorkspaceId, editing.id, form);
         toast({ title: "Project updated" });
       } else {
-        await base44.entities.ConstructionProject.create({ ...form, workspace_id: activeWorkspaceId });
+        await createWorkspaceRecord("ConstructionProject", activeWorkspaceId, form);
         toast({ title: "Project created" });
       }
       setDialogOpen(false);

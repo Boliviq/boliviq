@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
+import { getWorkspaceRecord, listWorkspaceRecords, createWorkspaceRecord, updateWorkspaceRecord, deleteWorkspaceRecord } from "@/lib/workspaceRecords";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -33,9 +33,9 @@ export default function ProjectDetail() {
     if (!activeWorkspaceId || !id) { setLoading(false); return; }
     setLoading(true);
     try {
-      const p = await base44.entities.ConstructionProject.get(id);
+      const p = await getWorkspaceRecord("ConstructionProject", activeWorkspaceId, id);
       setProject(p);
-      const t = await base44.entities.ConstructionTask.filter({ project_id: id }, "status", 200);
+      const t = await listWorkspaceRecords("ConstructionTask", activeWorkspaceId, { filter: { project_id: id }, sort: "status" });
       setTasks(t || []);
     } catch {
       toast({ title: "Project not found", variant: "destructive" });
@@ -48,10 +48,10 @@ export default function ProjectDetail() {
   const saveTask = async (form) => {
     try {
       if (editing) {
-        await base44.entities.ConstructionTask.update(editing.id, form);
+        await updateWorkspaceRecord("ConstructionTask", activeWorkspaceId, editing.id, form);
         toast({ title: "Task updated" });
       } else {
-        await base44.entities.ConstructionTask.create({ ...form, workspace_id: activeWorkspaceId, project_id: id });
+        await createWorkspaceRecord("ConstructionTask", activeWorkspaceId, { ...form, project_id: id });
         toast({ title: "Task added" });
       }
       setDialogOpen(false);
@@ -64,7 +64,7 @@ export default function ProjectDetail() {
   const removeTask = async (t) => {
     if (!confirm(`Delete "${t.title}"?`)) return;
     try {
-      await base44.entities.ConstructionTask.delete(t.id);
+      await deleteWorkspaceRecord("ConstructionTask", activeWorkspaceId, t.id);
       load();
     } catch (err) {
       toast({ title: "Delete failed", description: err.message, variant: "destructive" });

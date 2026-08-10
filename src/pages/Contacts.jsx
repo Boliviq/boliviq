@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
+import { listWorkspaceRecords, createWorkspaceRecord, updateWorkspaceRecord, deleteWorkspaceRecord } from "@/lib/workspaceRecords";
 import AppTopBar from "@/components/AppTopBar";
 import ContactForm from "@/components/crm/ContactForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,7 +22,7 @@ export default function Contacts() {
     if (!activeWorkspaceId) { setLoading(false); return; }
     setLoading(true);
     try {
-      setItems(await base44.entities.Contact.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 200));
+      setItems(await listWorkspaceRecords("Contact", activeWorkspaceId));
     } catch {
       setItems([]);
     }
@@ -33,8 +33,8 @@ export default function Contacts() {
 
   const save = async (vals) => {
     try {
-      if (editing) await base44.entities.Contact.update(editing.id, vals);
-      else await base44.entities.Contact.create({ ...vals, workspace_id: activeWorkspaceId });
+      if (editing) await updateWorkspaceRecord("Contact", activeWorkspaceId, editing.id, vals);
+      else await createWorkspaceRecord("Contact", activeWorkspaceId, vals);
       setOpen(false); setEditing(null);
       toast({ title: editing ? "Contact updated" : "Contact added" });
       load();
@@ -45,7 +45,7 @@ export default function Contacts() {
 
   const remove = async (c) => {
     if (!window.confirm(`Delete ${c.full_name}?`)) return;
-    try { await base44.entities.Contact.delete(c.id); toast({ title: "Deleted" }); load(); }
+    try { await deleteWorkspaceRecord("Contact", activeWorkspaceId, c.id); toast({ title: "Deleted" }); load(); }
     catch (err) { toast({ title: "Delete failed", description: err.message, variant: "destructive" }); }
   };
 

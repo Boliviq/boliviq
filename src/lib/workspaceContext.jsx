@@ -29,21 +29,19 @@ export function WorkspaceProvider({ children }) {
         setLoading(false);
         return;
       }
-      const me = await base44.auth.me();
       // Activate any pending invites for this user before loading memberships,
       // so a teammate who just registered/logged in sees their workspace immediately.
       await base44.functions.invoke("acceptWorkspaceInvites", {}).catch(() => null);
-      const ms = await base44.entities.WorkspaceMembership.filter({
-        user_id: me.id,
-        status: "active",
-      });
+      // Workspace RLS is created_by_id-only (or platform admin), so an invited
+      // teammate can never read a Workspace they didn't create directly —
+      // listMyWorkspaces returns both, gated on active membership instead.
+      const res = await base44.functions.invoke("listMyWorkspaces", {});
+      const data = (res && res.data) || res || {};
+      const ms = data.memberships || [];
+      const ws = data.workspaces || [];
       setMemberships(ms);
 
       const wsIds = Array.from(new Set(ms.map((m) => m.workspace_id))).filter(Boolean);
-      let ws = [];
-      if (wsIds.length) {
-        ws = await base44.entities.Workspace.filter({ id: { $in: wsIds } });
-      }
       setWorkspaces(ws);
 
       const stored = localStorage.getItem(STORAGE_KEY);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
+import { listWorkspaceRecords, createWorkspaceRecord, updateWorkspaceRecord, deleteWorkspaceRecord } from "@/lib/workspaceRecords";
 import AppTopBar from "@/components/AppTopBar";
 import PropertyForm from "@/components/crm/PropertyForm";
 import PipelineBoard from "@/components/crm/PipelineBoard";
@@ -23,7 +23,7 @@ export default function Properties() {
     if (!activeWorkspaceId) { setLoading(false); return; }
     setLoading(true);
     try {
-      const data = await base44.entities.Property.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 200);
+      const data = await listWorkspaceRecords("Property", activeWorkspaceId);
       setItems(data);
     } catch {
       setItems([]);
@@ -38,8 +38,8 @@ export default function Properties() {
 
   const save = async (vals) => {
     try {
-      if (editing) await base44.entities.Property.update(editing.id, vals);
-      else await base44.entities.Property.create({ ...vals, workspace_id: activeWorkspaceId });
+      if (editing) await updateWorkspaceRecord("Property", activeWorkspaceId, editing.id, vals);
+      else await createWorkspaceRecord("Property", activeWorkspaceId, vals);
       setDialogOpen(false); setEditing(null);
       toast({ title: editing ? "Property updated" : "Property added" });
       load();
@@ -50,12 +50,12 @@ export default function Properties() {
 
   const remove = async (p) => {
     if (!window.confirm(`Delete "${p.address}"?`)) return;
-    try { await base44.entities.Property.delete(p.id); toast({ title: "Deleted" }); load(); }
+    try { await deleteWorkspaceRecord("Property", activeWorkspaceId, p.id); toast({ title: "Deleted" }); load(); }
     catch (err) { toast({ title: "Delete failed", description: err.message, variant: "destructive" }); }
   };
 
   const move = async (id, status) => {
-    try { await base44.entities.Property.update(id, { status }); load(); }
+    try { await updateWorkspaceRecord("Property", activeWorkspaceId, id, { status }); load(); }
     catch (err) { toast({ title: "Move failed", description: err.message, variant: "destructive" }); }
   };
 

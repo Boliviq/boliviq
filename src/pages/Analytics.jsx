@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { listWorkspaceRecords } from "@/lib/workspaceRecords";
 import { useWorkspace } from "@/lib/workspaceContext";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
@@ -32,10 +32,10 @@ export default function Analytics() {
     if (!activeWorkspaceId) { setLoading(false); return; }
     setLoading(true);
     Promise.all([
-      base44.entities.Property.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 300).catch(() => []),
-      base44.entities.ConstructionProject.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 100).catch(() => []),
-      base44.entities.Contact.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 300).catch(() => []),
-      base44.entities.MarketplaceListing.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 100).catch(() => []),
+      listWorkspaceRecords("Property", activeWorkspaceId, { limit: 300 }).catch(() => []),
+      listWorkspaceRecords("ConstructionProject", activeWorkspaceId, { limit: 100 }).catch(() => []),
+      listWorkspaceRecords("Contact", activeWorkspaceId, { limit: 300 }).catch(() => []),
+      listWorkspaceRecords("MarketplaceListing", activeWorkspaceId, { limit: 100 }).catch(() => []),
     ]).then(([p, pr, c, l]) => setData({ properties: p || [], projects: pr || [], contacts: c || [], listings: l || [] }))
       .catch(() => toast({ title: "Could not load analytics", variant: "destructive" }))
       .finally(() => setLoading(false));

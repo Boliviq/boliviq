@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
+import { listWorkspaceRecords } from "@/lib/workspaceRecords";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Plus, TrendingUp, MapPin, Coins, BarChart3 } from "lucide-react";
@@ -43,8 +43,8 @@ export default function Dashboard() {
     if (!activeWorkspaceId) { setLoading(false); return; }
     setLoading(true);
     Promise.all([
-      base44.entities.Property.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 200).catch(() => []),
-      base44.entities.Contact.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 200).catch(() => []),
+      listWorkspaceRecords("Property", activeWorkspaceId).catch(() => []),
+      listWorkspaceRecords("Contact", activeWorkspaceId).catch(() => []),
     ]).then(([p, c]) => { setProperties(p || []); setContacts(c || []); })
       .catch(() => toast({ title: "Could not load dashboard", variant: "destructive" }))
       .finally(() => setLoading(false));

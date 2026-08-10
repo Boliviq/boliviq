@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
+import { listWorkspaceRecords } from "@/lib/workspaceRecords";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Plus, Send, Sparkles, MessageSquare, Trash2, Lock } from "lucide-react";
@@ -79,9 +80,9 @@ export default function Assistant() {
 
   const buildContext = async () => {
     const [properties, projects, contacts] = await Promise.all([
-      base44.entities.Property.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 20).catch(() => []),
-      base44.entities.ConstructionProject.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 10).catch(() => []),
-      base44.entities.Contact.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 10).catch(() => []),
+      listWorkspaceRecords("Property", activeWorkspaceId, { limit: 20 }).catch(() => []),
+      listWorkspaceRecords("ConstructionProject", activeWorkspaceId, { limit: 10 }).catch(() => []),
+      listWorkspaceRecords("Contact", activeWorkspaceId, { limit: 10 }).catch(() => []),
     ]);
     const money = (n) => (n ? "$" + Number(n).toLocaleString() : "—");
     const propsSummary = (properties || []).map((p) => `- ${p.address} (${p.status || "lead"}, ${p.deal_strategy || "n/a"}, valuation ${money(p.valuation)}, ARV ${money(p.arv)})`).join("\n");

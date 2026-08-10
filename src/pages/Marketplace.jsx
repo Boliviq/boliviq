@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useWorkspace } from "@/lib/workspaceContext";
+import { listWorkspaceRecords, createWorkspaceRecord, updateWorkspaceRecord, deleteWorkspaceRecord } from "@/lib/workspaceRecords";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,7 @@ export default function Marketplace() {
     try {
       const user = await base44.auth.me();
       setMe(user);
-      const data = await base44.entities.MarketplaceListing.filter({ workspace_id: activeWorkspaceId }, "-updated_date", 200);
+      const data = await listWorkspaceRecords("MarketplaceListing", activeWorkspaceId);
       setListings(data || []);
     } catch {
       toast({ title: "Could not load listings", variant: "destructive" });
@@ -70,10 +71,10 @@ export default function Marketplace() {
   const save = async (form) => {
     try {
       if (editing) {
-        await base44.entities.MarketplaceListing.update(editing.id, form);
+        await updateWorkspaceRecord("MarketplaceListing", activeWorkspaceId, editing.id, form);
         toast({ title: "Listing updated" });
       } else {
-        await base44.entities.MarketplaceListing.create({ ...form, workspace_id: activeWorkspaceId });
+        await createWorkspaceRecord("MarketplaceListing", activeWorkspaceId, form);
         toast({ title: "Listing created" });
       }
       setDialogOpen(false);
@@ -86,7 +87,7 @@ export default function Marketplace() {
   const remove = async (l) => {
     if (!confirm(`Delete "${l.title}"?`)) return;
     try {
-      await base44.entities.MarketplaceListing.delete(l.id);
+      await deleteWorkspaceRecord("MarketplaceListing", activeWorkspaceId, l.id);
       toast({ title: "Listing deleted" });
       load();
     } catch (err) {
