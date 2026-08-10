@@ -21,6 +21,10 @@ const OCCUPANCY = [
 export default function PropertyForm({ initial, onSubmit, onCancel }) {
   const [f, setF] = useState({
     address: initial?.address || "",
+    street_address: initial?.street_address || "",
+    city: initial?.city || "",
+    state: initial?.state || "",
+    zip_code: initial?.zip_code || "",
     status: initial?.status || "lead",
     deal_strategy: initial?.deal_strategy || "",
     property_type: initial?.property_type || "",
@@ -46,6 +50,26 @@ export default function PropertyForm({ initial, onSubmit, onCancel }) {
       <div>
         <Label htmlFor="address">Address *</Label>
         <Input id="address" value={f.address} onChange={(e) => set("address", e.target.value)} placeholder="123 Main St, Austin, TX" required />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label>City</Label>
+          <Input value={f.city} onChange={(e) => set("city", e.target.value)} placeholder="Austin" />
+        </div>
+        <div>
+          <Label>State</Label>
+          <Input value={f.state} onChange={(e) => set("state", e.target.value)} placeholder="TX" />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label>Street address</Label>
+          <Input value={f.street_address} onChange={(e) => set("street_address", e.target.value)} placeholder="123 Main St" />
+        </div>
+        <div>
+          <Label>ZIP code</Label>
+          <Input value={f.zip_code} onChange={(e) => set("zip_code", e.target.value)} placeholder="78701" />
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>

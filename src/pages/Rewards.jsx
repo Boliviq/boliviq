@@ -27,13 +27,15 @@ export default function Rewards() {
     if (!activeWorkspaceId) { setLoading(false); return; }
     setLoading(true);
     try {
-      const [wallets, cps, refs] = await Promise.all([
-        base44.entities.CreditWallet.filter({ workspace_id: activeWorkspaceId }).catch(() => []),
-        base44.entities.Coupon.filter({ workspace_id: activeWorkspaceId }, "-created_date", 50).catch(() => []),
+      const [billingRes, couponsRes, refs] = await Promise.all([
+        base44.functions.invoke("getBillingState", { workspace_id: activeWorkspaceId }).catch(() => ({ data: {} })),
+        base44.functions.invoke("manageCoupons", { workspace_id: activeWorkspaceId, action: "list" }).catch(() => ({ data: { coupons: [] } })),
         base44.entities.Referral.filter({ workspace_id: activeWorkspaceId }, "-created_date", 50).catch(() => []),
       ]);
-      setBalance(wallets?.[0]?.balance || 0);
-      setCoupons(cps || []);
+      const billing = (billingRes && billingRes.data) || billingRes || {};
+      const couponData = (couponsRes && couponsRes.data) || couponsRes || {};
+      setBalance((billing.wallet && billing.wallet.balance) || 0);
+      setCoupons(couponData.coupons || []);
       setReferrals(refs || []);
     } catch { toast({ title: "Could not load rewards", variant: "destructive" }); }
     setLoading(false);
@@ -63,11 +65,11 @@ export default function Rewards() {
 
   const createCoupon = async (form) => {
     try {
-      await base44.entities.Coupon.create({ ...form, workspace_id: activeWorkspaceId });
+      await base44.functions.invoke("manageCoupons", { ...form, workspace_id: activeWorkspaceId, action: "create" });
       toast({ title: "Coupon created" });
       setDialogOpen(false);
       load();
-    } catch (err) { toast({ title: "Create failed", description: err.message, variant: "destructive" }); }
+    } catch (err) { toast({ title: "Create failed", description: err.message || err.error, variant: "destructive" }); }
   };
 
   if (wsLoading || loading) {

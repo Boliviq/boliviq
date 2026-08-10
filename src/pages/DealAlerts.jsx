@@ -27,7 +27,7 @@ export default function DealAlerts() {
       const user = await base44.auth.me();
       setMe(user);
       const data = await base44.entities.DealAlert.filter(
-        activeWorkspaceId ? { workspace_id: activeWorkspaceId } : { created_by_id: me?.id },
+        activeWorkspaceId ? { workspace_id: activeWorkspaceId } : { created_by_id: user?.id },
         "-created_date", 100
       );
       setAlerts(data || []);
@@ -35,7 +35,7 @@ export default function DealAlerts() {
     setLoading(false);
   };
 
-  useEffect(() => { if (!wsLoading) load(); }, [wsLoading]);
+  useEffect(() => { if (!wsLoading) load(); }, [wsLoading, activeWorkspaceId]);
 
   const save = async (form) => {
     try {

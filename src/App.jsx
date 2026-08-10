@@ -9,6 +9,10 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from '@/components/ScrollToTop';
 import Home from '@/pages/Home';
 import Blueprint from '@/pages/Blueprint';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
 import Workspaces from '@/pages/Workspaces';
 import Billing from '@/pages/Billing';
 import Properties from '@/pages/Properties';
@@ -67,6 +71,10 @@ const AuthenticatedApp = () => {
       {/* Public routes — no auth, no entity queries */}
       <Route path="/" element={<Home />} />
       <Route path="/blueprint" element={<Blueprint />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/launch-timeline" element={<LaunchTimeline />} />
       <Route path="/homeowner" element={<HomeownerHome />} />
       <Route path="/contractor" element={<ContractorHome />} />

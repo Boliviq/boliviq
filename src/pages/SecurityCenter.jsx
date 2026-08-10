@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import AppTopBar from "@/components/AppTopBar";
 import { useToast } from "@/components/ui/use-toast";
-import { Shield, ShieldAlert, ShieldCheck, Loader2, RefreshCw, AlertTriangle, Activity, Lock, Eye, Bug } from "lucide-react";
+import { ShieldAlert, ShieldCheck, Loader2, RefreshCw, AlertTriangle, Activity, Lock, Eye, Bug } from "lucide-react";
 
 const SEVERITY_STYLES = {
   critical: { badge: "bg-red-500/20 text-red-400 border-red-500/30", label: "CRITICAL" },

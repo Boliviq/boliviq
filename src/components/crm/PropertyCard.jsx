@@ -19,6 +19,11 @@ export default function PropertyCard({ property, onClick, dragging }) {
         <MapPin className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
         <span className="line-clamp-2">{p.address || "Untitled"}</span>
       </div>
+      {p.city && (
+        <div className="text-xs text-muted-foreground mt-0.5">
+          {[p.city, p.state].filter(Boolean).join(", ")}
+        </div>
+      )}
       {p.deal_strategy && (
         <div className="mt-2">
           <Badge variant="secondary" className="text-[10px]">{STRATEGY_LABELS[p.deal_strategy] || p.deal_strategy}</Badge>

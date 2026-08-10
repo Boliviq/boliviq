@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, HardHat, TrendingUp, Building2, KeyRound, Trees, Building, Landmark, FileText, Package, Users, Hammer, ArrowRight } from "lucide-react";
+import { Home, HardHat, TrendingUp, Building2, KeyRound, Trees, Building, Landmark, FileText, Package, Users, ArrowRight } from "lucide-react";
 
 const TILES = [
   { icon: Home, title: "Homeowner Section", sub: "Projects & requests for your home", items: ["Home Repairs", "Improvement", "Projects", "Sell Your Home", "General Requests"] },
