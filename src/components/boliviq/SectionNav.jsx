@@ -70,7 +70,7 @@ export default function SectionNav() {
         </nav>
 
         <Link
-          to="/workspaces"
+          to="/register"
           className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
         >
           Get Started

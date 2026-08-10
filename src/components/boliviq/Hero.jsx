@@ -48,12 +48,12 @@ export default function Hero() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#overview"
+              <Link
+                to="/register"
                 className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
               >
                 Start Your Free Plan <ArrowRight className="h-4 w-4" />
-              </a>
+              </Link>
               <Link
                 to="/blueprint"
                 className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 hover:border-accent/40 hover:text-accent transition-colors"
