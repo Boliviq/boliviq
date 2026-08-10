@@ -19,7 +19,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 //            are sold on — any teammate can update a shared record).
 //   delete — only the record's creator or a workspace owner/admin.
 
-const ENTITIES = new Set(['Property', 'Contact', 'ConstructionProject', 'ConstructionTask', 'MarketplaceListing']);
+const ENTITIES = new Set(['Property', 'Contact', 'ConstructionProject', 'ConstructionTask', 'MarketplaceListing', 'BuyBox']);
 
 Deno.serve(async (req) => {
   try {

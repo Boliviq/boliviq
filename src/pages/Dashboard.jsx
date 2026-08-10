@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useWorkspace } from "@/lib/workspaceContext";
 import { listWorkspaceRecords } from "@/lib/workspaceRecords";
+import { base44 } from "@/api/base44Client";
 import AppTopBar from "@/components/AppTopBar";
+import DealResultCard from "@/components/dealdiscovery/DealResultCard";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Plus, TrendingUp, MapPin, Coins, BarChart3 } from "lucide-react";
+import { Loader2, Plus, TrendingUp, MapPin, Coins, BarChart3, Sparkles } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 const STATUS_COLORS = {
@@ -33,10 +35,13 @@ function Stat({ icon: Icon, label, value, accent }) {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { activeWorkspaceId, loading: wsLoading } = useWorkspace();
   const [properties, setProperties] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dealMatches, setDealMatches] = useState([]);
+  const [dealsLoading, setDealsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -48,6 +53,15 @@ export default function Dashboard() {
     ]).then(([p, c]) => { setProperties(p || []); setContacts(c || []); })
       .catch(() => toast({ title: "Could not load dashboard", variant: "destructive" }))
       .finally(() => setLoading(false));
+  }, [activeWorkspaceId]);
+
+  useEffect(() => {
+    if (!activeWorkspaceId) { setDealsLoading(false); return; }
+    setDealsLoading(true);
+    base44.functions.invoke("dealDiscovery", { workspace_id: activeWorkspaceId, query: "" })
+      .then((res) => setDealMatches(((res?.data || res)?.results || []).slice(0, 4)))
+      .catch(() => setDealMatches([]))
+      .finally(() => setDealsLoading(false));
   }, [activeWorkspaceId]);
 
   const stats = useMemo(() => {
@@ -91,6 +105,26 @@ export default function Dashboard() {
           <Stat icon={TrendingUp} label="Pipeline value" value={money(stats.pipelineValue)} />
           <Stat icon={BarChart3} label="Total ARV" value={money(stats.arvTotal)} />
           <Stat icon={Coins} label="Profit potential" value={money(stats.profitPotential)} />
+        </div>
+
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-lg font-semibold flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-accent" /> Deals Boliviq Found For You</h2>
+            <Link to="/deals" className="text-xs font-semibold text-accent hover:opacity-80">Open Deal Discovery →</Link>
+          </div>
+          {dealsLoading ? (
+            <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-accent" /></div>
+          ) : dealMatches.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              No matches from currently connected sources yet. <Link to="/deals" className="text-accent underline underline-offset-2">Search Deal Discovery</Link> or connect more sources in Admin.
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {dealMatches.map((deal) => (
+                <DealResultCard key={deal.id} deal={deal} busyAction={null} onView={() => navigate("/deals")} onAnalyze={() => navigate("/deals")} onSaveToCrm={() => navigate("/deals")} onAddToPipeline={() => navigate("/deals")} />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-4">

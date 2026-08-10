@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const STATUSES = [
   ["lead", "Lead"], ["prospect", "Prospect"], ["under_contract", "Under Contract"],
@@ -31,6 +32,9 @@ export default function PropertyForm({ initial, onSubmit, onCancel }) {
     occupancy: initial?.occupancy || "unknown",
     valuation: initial?.valuation ?? "",
     arv: initial?.arv ?? "",
+    asking_price: initial?.asking_price ?? "",
+    estimated_rehab: initial?.estimated_rehab ?? "",
+    visibility: initial?.visibility || "private",
     notes: initial?.notes || "",
   });
   const set = (k, v) => setF((s) => ({ ...s, [k]: v }));
@@ -42,6 +46,8 @@ export default function PropertyForm({ initial, onSubmit, onCancel }) {
       ...f,
       valuation: f.valuation === "" ? null : Number(f.valuation),
       arv: f.arv === "" ? null : Number(f.arv),
+      asking_price: f.asking_price === "" ? null : Number(f.asking_price),
+      estimated_rehab: f.estimated_rehab === "" ? null : Number(f.estimated_rehab),
     });
   };
 
@@ -112,6 +118,23 @@ export default function PropertyForm({ initial, onSubmit, onCancel }) {
           <Label>ARV ($)</Label>
           <Input type="number" value={f.arv} onChange={(e) => set("arv", e.target.value)} placeholder="0" />
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label>Asking price ($)</Label>
+          <Input type="number" value={f.asking_price} onChange={(e) => set("asking_price", e.target.value)} placeholder="0" />
+        </div>
+        <div>
+          <Label>Estimated rehab ($)</Label>
+          <Input type="number" value={f.estimated_rehab} onChange={(e) => set("estimated_rehab", e.target.value)} placeholder="0" />
+        </div>
+      </div>
+      <div className="flex items-center justify-between rounded-md border border-input px-3 py-2.5">
+        <div>
+          <Label className="text-sm">List on Boliviq Marketplace</Label>
+          <p className="text-xs text-muted-foreground">Other investors can discover this as a deal opportunity via Deal Discovery.</p>
+        </div>
+        <Switch checked={f.visibility === "public"} onCheckedChange={(v) => set("visibility", v ? "public" : "private")} />
       </div>
       <div>
         <Label>Notes</Label>
