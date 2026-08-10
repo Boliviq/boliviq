@@ -15,6 +15,7 @@
       "type": "string",
       "enum": [
         "free",
+        "homeowner_ai",
         "professional",
         "team_professional",
         "professional_ai",
@@ -60,6 +61,9 @@
     "name"
   ],
   "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
     "read": {
       "$or": [
         {

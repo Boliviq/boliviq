@@ -1,0 +1,63 @@
+{
+  "description": "Runs the Boliviq Security Sentinel hourly to continuously monitor for security threats, attack patterns, and abuse. Creates SecurityEvent records for detected threats.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 * * * *",
+      "one_time_date": null,
+      "timezone": "America/Chicago",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Hourly Security Sentinel",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "hourly_security_sentinel",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_sentinel": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "securitySentinel",
+            "args": {}
+          },
+          "then": "check_result",
+          "x-base44": {
+            "title": "Run security sentinel",
+            "description": "Execute threat detection and security monitoring"
+          }
+        }
+      },
+      {
+        "check_result": {
+          "switch": [
+            {
+              "when": "${ .run_sentinel.overall == \"secure\" }",
+              "then": "end"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Check result",
+            "description": "Branch on security status"
+          }
+        }
+      }
+    ]
+  }
+}

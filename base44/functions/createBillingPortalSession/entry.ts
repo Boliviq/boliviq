@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     }
 
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
-    const origin = req.headers.get('origin') || 'https://app.boliviq.com';
+    const origin = req.headers.get('origin') || 'https://boliviq.com';
     const session = await stripe.billingPortal.sessions.create({
       customer: workspace.stripe_customer_id,
       return_url: origin + '/billing',

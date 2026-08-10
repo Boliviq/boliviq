@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       await base44.asServiceRole.entities.Workspace.update(workspaceId, { stripe_customer_id: customerId, billing_source: 'stripe' });
     }
 
-    const origin = req.headers.get('origin') || 'https://app.boliviq.com';
+    const origin = req.headers.get('origin') || 'https://boliviq.com';
     const sessionOpts = {
       mode: item.mode,
       customer: customerId,

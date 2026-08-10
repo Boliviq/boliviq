@@ -1,0 +1,63 @@
+{
+  "description": "Runs the launch monitor function daily at 9am to check system health and log results for ongoing monitoring.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/Chicago",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Daily Launch Monitor",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_launch_monitor",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_monitor": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "launchMonitor",
+            "args": {}
+          },
+          "then": "check_result",
+          "x-base44": {
+            "title": "Run launch monitor",
+            "description": "Execute launch readiness checks"
+          }
+        }
+      },
+      {
+        "check_result": {
+          "switch": [
+            {
+              "when": "${ .run_monitor.overall == \"ready\" }",
+              "then": "end"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Check result",
+            "description": "Log and branch on readiness"
+          }
+        }
+      }
+    ]
+  }
+}

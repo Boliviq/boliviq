@@ -3,10 +3,10 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import PageNotFound from './lib/PageNotFound';
+import PageNotFound from '@/lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import ScrollToTop from './components/ScrollToTop';
+import ScrollToTop from '@/components/ScrollToTop';
 import Home from '@/pages/Home';
 import Blueprint from '@/pages/Blueprint';
 import Login from '@/pages/Login';
@@ -25,6 +25,13 @@ import Assistant from '@/pages/Assistant';
 import Rewards from '@/pages/Rewards';
 import Analytics from '@/pages/Analytics';
 import Admin from '@/pages/Admin';
+import PermissionsMonitor from '@/pages/PermissionsMonitor';
+import SetupHealth from '@/pages/SetupHealth';
+import FoundationHealth from '@/pages/FoundationHealth';
+import SecurityAudit from '@/pages/SecurityAudit';
+import SecurityCenter from '@/pages/SecurityCenter';
+import LaunchMonitor from '@/pages/LaunchMonitor';
+import LaunchTimeline from '@/pages/LaunchTimeline';
 import DealAlerts from '@/pages/DealAlerts';
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import ContractorTools from '@/pages/ContractorTools';
@@ -68,6 +75,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/launch-timeline" element={<LaunchTimeline />} />
       <Route path="/homeowner" element={<HomeownerHome />} />
       <Route path="/contractor" element={<ContractorHome />} />
       <Route path="/agent" element={<AgentHome />} />
@@ -87,6 +95,12 @@ const AuthenticatedApp = () => {
         <Route path="/rewards" element={<WorkspaceProvider><Rewards /></WorkspaceProvider>} />
         <Route path="/analytics" element={<WorkspaceProvider><Analytics /></WorkspaceProvider>} />
         <Route path="/admin" element={<WorkspaceProvider><Admin /></WorkspaceProvider>} />
+        <Route path="/admin/permissions-monitor" element={<WorkspaceProvider><PermissionsMonitor /></WorkspaceProvider>} />
+        <Route path="/admin/setup-health" element={<WorkspaceProvider><SetupHealth /></WorkspaceProvider>} />
+        <Route path="/admin/foundation-health" element={<WorkspaceProvider><FoundationHealth /></WorkspaceProvider>} />
+        <Route path="/admin/security-audit" element={<WorkspaceProvider><SecurityAudit /></WorkspaceProvider>} />
+        <Route path="/admin/security-center" element={<WorkspaceProvider><SecurityCenter /></WorkspaceProvider>} />
+        <Route path="/admin/launch-monitor" element={<WorkspaceProvider><LaunchMonitor /></WorkspaceProvider>} />
         <Route path="/deal-alerts" element={<WorkspaceProvider><DealAlerts /></WorkspaceProvider>} />
         <Route path="/knowledge-base" element={<WorkspaceProvider><KnowledgeBase /></WorkspaceProvider>} />
         <Route path="/contractor-tools" element={<WorkspaceProvider><ContractorTools /></WorkspaceProvider>} />
