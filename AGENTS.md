@@ -8,6 +8,8 @@ Start with `README.md` for local setup, environment variables, and publish workf
 
 Before any product/feature work, read `PRODUCT_CANON_AND_ROADMAP.md` — the authoritative product canon, an accurate inventory of what's actually built vs. aspirational, and the current data model/function/pattern reference. It supersedes older in-repo planning content (e.g. `src/data/blueprint.js`).
 
+`BUILD_PLAN.md` is the phased execution sequence built on top of that roadmap — check which phase is current, re-verify its entry condition against the actual code before starting (not just against these docs), and update it as phases complete.
+
 ## Base44 References
 
 - CLI overview: https://docs.base44.com/developers/references/cli/get-started/overview.md
