@@ -6,6 +6,8 @@ This is a Base44 app repository. Treat it as user-owned application code, keep c
 
 Start with `README.md` for local setup, environment variables, and publish workflow.
 
+Before any product/feature work, read `PRODUCT_CANON_AND_ROADMAP.md` — the authoritative product canon, an accurate inventory of what's actually built vs. aspirational, and the current data model/function/pattern reference. It supersedes older in-repo planning content (e.g. `src/data/blueprint.js`).
+
 ## Base44 References
 
 - CLI overview: https://docs.base44.com/developers/references/cli/get-started/overview.md
